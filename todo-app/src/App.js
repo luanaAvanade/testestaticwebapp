@@ -7,10 +7,10 @@ import { SnackbarProvider } from 'notistack';
 import { ThemeProvider } from '@material-ui/styles';
 import { createBrowserHistory } from 'history';
 import { I18nextProvider } from 'react-i18next';
-import { i18n } from '@/locales';
-import configureStore from '@/store';
-import Routes from '@/routes';
-import theme from '@/theme';
+//import { i18n } from '@/locales';
+// import configureStore from '@/store';
+// import Routes from '@/routes';
+// import theme from '@/theme';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const history = createBrowserHistory({ basename: baseUrl });
