@@ -1,32 +1,35 @@
+import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import Home from './components/Home'
-import Detail from './components/Detail'
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route
-} from "react-router-dom";
+import { hot } from 'react-hot-loader';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
+import { ThemeProvider } from '@material-ui/styles';
+import { createBrowserHistory } from 'history';
+import { I18nextProvider } from 'react-i18next';
+import { i18n } from '@/locales';
+import configureStore from '@/store';
+import Routes from '@/routes';
+import theme from '@/theme';
+
+const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
+const history = createBrowserHistory({ basename: baseUrl });
 
 function App() {
-
-  return(
-   
-    <Router>
-      <div>
-        <Switch>
-          <Route path="/detail">
-            <Detail />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
-  )
-
+	return (
+		// <Provider store={configureStore()}>
+		// 	<ThemeProvider theme={theme}>
+		// 		<Router history={history}>
+		// 			<SnackbarProvider>
+		// 				<I18nextProvider i18n={i18n}>
+		// 					<Routes />
+		// 				</I18nextProvider>
+		// 			</SnackbarProvider>
+		// 		</Router>
+		// 	</ThemeProvider>
+		// </Provider>
+		<div>deu certo</div>
+	);
 }
 
-export default App;
+export default hot(module)(App);
