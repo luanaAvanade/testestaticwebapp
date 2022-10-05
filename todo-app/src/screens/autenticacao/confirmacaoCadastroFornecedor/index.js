@@ -3,6 +3,7 @@ import { Box, Typography } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import useReactRouter from 'use-react-router';
 import QueryString from 'query-string';
+import { Card, Button } from '@/components';
 import { CemigVerde } from '@/assets';
 import { Image, ContentLogin, Background, BoxContentText } from './style';
 import { Footer } from '@/layout';
@@ -60,7 +61,7 @@ export default function ConfirmacaoCadastroFornecedor() {
 					top={`calc( 50% - (@/..{minheight}px/2) - 60px)`}
 					left={`calc( 50% - (@/..{width}px/2))`}
 				>
-					{/* <Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
+					<Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
 						<Box display='flex' justifyContent='space-around'>
 							<Image src={CemigVerde} />
 						</Box>
@@ -83,7 +84,7 @@ export default function ConfirmacaoCadastroFornecedor() {
 						<Box display='flex'>
 							<Button text={translate('ok')} fullWidth onClick={irParaLogin} />
 						</Box>
-					</Card> */}
+					</Card>
 				</ContentLogin>
 			)}
 			<Footer />

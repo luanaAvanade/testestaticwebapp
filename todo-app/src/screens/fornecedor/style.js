@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { withStyles } from '@material-ui/core/styles';
-//import { Button } from 'react-bootstrap';
+import { Button } from '@/components';
 import {
 	Switch as SwitchUI,
 	Box,
@@ -149,32 +149,31 @@ function Modal({
 	exibirBotao = true
 }) {
 	return (
-		// <Dialog open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth}>
-		// 	<TitleModal>
-		// 		<Box display='flex' flexDirection='row'>
-		// 			<Box flexGrow={1}>
-		// 				<TextTitleModal title={title} variant='h5'>
-		// 					{title}
-		// 				</TextTitleModal>
-		// 			</Box>
-		// 			<Box alignSelf='flex-end'>
-		// 				<IconButton size='small' title={titleFechar} onClick={handleClose}>
-		// 					<Close />
-		// 				</IconButton>
-		// 			</Box>
-		// 		</Box>
-		// 		{componentSubtitle && (
-		// 			<Box display='flex' flexDirection='row'>
-		// 				<Box flexGrow={1}>{componentSubtitle}</Box>
-		// 			</Box>
-		// 		)}
-		// 	</TitleModal>
-		// 	{children && <ContentModal>{children}</ContentModal>}
-		// 	<DialogActions>
-		// 		{exibirBotao && <Button onClick={onClickButton} color='primary' text={textButton} />}
-		// 	</DialogActions>
-		// </Dialog>
-		<div></div>
+		<Dialog open={open} onClose={handleClose} maxWidth={maxWidth} fullWidth={fullWidth}>
+			<TitleModal>
+				<Box display='flex' flexDirection='row'>
+					<Box flexGrow={1}>
+						<TextTitleModal title={title} variant='h5'>
+							{title}
+						</TextTitleModal>
+					</Box>
+					<Box alignSelf='flex-end'>
+						<IconButton size='small' title={titleFechar} onClick={handleClose}>
+							<Close />
+						</IconButton>
+					</Box>
+				</Box>
+				{componentSubtitle && (
+					<Box display='flex' flexDirection='row'>
+						<Box flexGrow={1}>{componentSubtitle}</Box>
+					</Box>
+				)}
+			</TitleModal>
+			{children && <ContentModal>{children}</ContentModal>}
+			<DialogActions>
+				{exibirBotao && <Button onClick={onClickButton} color='primary' text={textButton} />}
+			</DialogActions>
+		</Dialog>
 	);
 }
 

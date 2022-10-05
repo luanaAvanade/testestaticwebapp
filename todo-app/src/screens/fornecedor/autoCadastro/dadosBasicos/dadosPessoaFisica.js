@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//import { FormInput, FormSelect, Card } from 'react-axxiom';
+import { FormInput, FormSelect, Card } from '@/components';
 import { Box, CardContent, CardHeader } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { translate } from '@/locales';
@@ -95,7 +95,7 @@ export default function DadosPessoaFisica({
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Card>
+			<Card>
 				<CardHeader
 					title={translate('dadosPessoais')}
 					action={
@@ -194,7 +194,7 @@ export default function DadosPessoaFisica({
 						</Box>
 					</Box>
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }

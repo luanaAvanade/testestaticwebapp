@@ -17,18 +17,17 @@ const history = createBrowserHistory({ basename: baseUrl });
 
 function App() {
 	return (
-		// <Provider store={configureStore()}>
-		// 	<ThemeProvider theme={theme}>
-		// 		<Router history={history}>
-		// 			<SnackbarProvider>
-		// 				<I18nextProvider i18n={i18n}>
-		// 					<Routes />
-		// 				</I18nextProvider>
-		// 			</SnackbarProvider>
-		// 		</Router>
-		// 	</ThemeProvider>
-		// </Provider>
-		<div>deu certo</div>
+		<Provider store={configureStore()}>
+			<ThemeProvider theme={theme}>
+				<Router history={history}>
+					<SnackbarProvider>
+						<I18nextProvider i18n={i18n}>
+							<Routes />
+						</I18nextProvider>
+					</SnackbarProvider>
+				</Router>
+			</ThemeProvider>
+		</Provider>
 	);
 }
 

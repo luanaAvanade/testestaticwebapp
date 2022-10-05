@@ -6,7 +6,7 @@ import { useFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import QueryString from 'query-string';
-// import { Card, FormInput, Button } from 'react-axxiom';
+import { Card, FormInput, Button } from '@/components';
 import { CemigVerde } from '@/assets';
 import { Image, ContentLogin, Background } from './style';
 import { Footer } from '@/layout';
@@ -95,7 +95,7 @@ export default function RedefinicaoSenha() {
 				top={`calc( 50% - (@/..{minheight}px/2) - 60px)`}
 				left={`calc( 50% - (@/..{width}px/2))`}
 			>
-				{/* <Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
+				<Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
 					<Box display='flex' justifyContent='space-around'>
 						<Image src={CemigVerde} />
 					</Box>
@@ -122,7 +122,7 @@ export default function RedefinicaoSenha() {
 							<Button text={translate('atualizar')} type='submit' fullWidth />
 						</Box>
 					</Form>
-				</Card> */}
+				</Card>
 			</ContentLogin>
 			<Footer />
 		</Background>

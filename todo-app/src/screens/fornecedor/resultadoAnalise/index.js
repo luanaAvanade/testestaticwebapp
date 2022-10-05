@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Table, TableHead, TableRow, TableCell } from 'react-axxiom';
+import { Table, TableHead, TableRow, TableCell } from '@/components';
 import {
 	Box,
 	TableBody,

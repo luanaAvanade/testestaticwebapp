@@ -1,5 +1,5 @@
 import React from 'react';
-//import { FormInput, Card } from 'react-axxiom';
+import { FormInput, Card } from '@/components';
 import { Box, CardContent, CardHeader } from '@material-ui/core';
 import { translate } from '@/locales';
 import { checkError } from '@/utils/validation';
@@ -34,7 +34,7 @@ export default function ContatoCliente({
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Card>
+			<Card>
 				<CardHeader
 					title={translate('contatoCliente')}
 					action={
@@ -75,7 +75,7 @@ export default function ContatoCliente({
 						</Box>
 					</Box>
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }

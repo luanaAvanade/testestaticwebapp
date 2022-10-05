@@ -5,7 +5,7 @@ import { TopbarExterna, Title } from '@/layout';
 import DadosBasicos from '@/screens/fornecedor/autoCadastro/dadosBasicos';
 import paths from '@/utils/paths';
 import theme from '@/theme';
-import { Button } from 'react-axxiom';
+import { Button } from '@/components';
 import { translate } from '@/locales';
 import { COMANDO_CADASTRO_FORNECEDOR } from '@/utils/constants';
 import { useSnackbar } from 'notistack';

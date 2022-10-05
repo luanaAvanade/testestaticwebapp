@@ -1,10 +1,10 @@
 import React, { Fragment, Suspense, lazy } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import { Loader } from '@/components';
 import { useSelector } from 'react-redux';
 import paths from '@/utils/paths';
 import { translate } from '@/locales';
 import { PrivateRoute } from '@/layout';
-
 import {
 	Login,
 	RedefinicaoSenha,
@@ -52,11 +52,12 @@ export default function Routes() {
 
 	return (
 		<Fragment>
-			<Suspense>
+			<Loader open={open} message={message} />
+			<Suspense fallback={<Loader open message={`${translate('carregando')}`} />}>
 				<Switch>
 				<Redirect exact from='/' to={paths.getPathByCodigo('login')} />
-					{/* <Redirect exact from='/semPermissao' to={paths.getPathByCodigo('semPermissao')} />
-					<Route path={paths.getPathByCodigo('login')} component={Login} /> */}
+					<Redirect exact from='/semPermissao' to={paths.getPathByCodigo('semPermissao')} />
+					<Route path={paths.getPathByCodigo('login')} component={Login} />
 					<Route path={paths.getPathByCodigo('redefinicao-senha')} component={RedefinicaoSenha} />
 					<Route
 						path={paths.getPathByCodigo('confirmacao-cadastro-fornecedor')}

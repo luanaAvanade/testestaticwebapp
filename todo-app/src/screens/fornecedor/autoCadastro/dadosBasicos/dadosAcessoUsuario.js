@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
-//import { Card, FormInput, Confirm } from 'react-axxiom';
+import { Card, FormInput, Confirm } from '@/components';
 import { CardHeader, CardContent, Box, InputAdornment, IconButton } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
@@ -135,7 +135,7 @@ export default function DadosAcessoUsuario({
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Card>
+			<Card>
 				<Confirm
 					open={modalCpfJaCadastrado}
 					handleClose={limparCPF}
@@ -303,7 +303,7 @@ export default function DadosAcessoUsuario({
 						</Fragment>
 					)}
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }

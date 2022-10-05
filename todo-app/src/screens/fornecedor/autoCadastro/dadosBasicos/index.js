@@ -14,7 +14,7 @@ import {
 	FormHelperText,
 	Typography
 } from '@material-ui/core';
-//import { Button, FormSelect, Card, Confirm, Modal } from 'react-axxiom';
+import { Button, FormSelect, Card, Confirm, Modal } from '@/components';
 import { Form } from 'formik';
 import { useSnackbar } from 'notistack';
 import { Creators as LoaderCreators } from '@/store/ducks/loader';
@@ -122,10 +122,8 @@ export default function DadosBasicos({
 	// Efeito Inicial
 
 	useEffect(() => {
-		if (preCadastro) {
 			estadoFindAll();
-		}
-
+		
 		if (empresa) {
 			setDadosEmpresa(empresa);
 		}
@@ -471,11 +469,11 @@ export default function DadosBasicos({
 			translate('campoObrigatorio'),
 			value => testIncricaoEstadual(value)
 		),
-		// optanteSimplesNacional: Yup.string().test(
-		// 	'optanteSimplesNacional',
-		// 	translate('campoObrigatorio'),
-		// 	value => testSelectRequired(value)
-		// ),
+		optanteSimplesNacional: Yup.string().test(
+			'optanteSimplesNacional',
+			translate('campoObrigatorio'),
+			value => testSelectRequired(value)
+		),
 		dataAbertura: Yup.string().test('dataAbertura', messageValidateData, value => testData(value)),
 		// atividadeEconomicaPrincipal: Yup.string()
 		// 	.nullable()
@@ -497,16 +495,16 @@ export default function DadosBasicos({
 		municipio: Yup.string().test('municipio', translate('campoObrigatorio'), value =>
 			testSelectRequired(value)
 		),
-		// nomeUsuario: Yup.string().test('nomeUsuario', translate('campoObrigatorio'), value =>
-		// 	testRequiredPreCadastro(value)
-		// ),
+		nomeUsuario: Yup.string().test('nomeUsuario', translate('campoObrigatorio'), value =>
+			testRequiredPreCadastro(value)
+		),
 		cpf: Yup.string().test('cpf', messageValidateCPF, value => testCpfUsuario(value)),
 		telefone: Yup.string().test('telefone', translate('campoObrigatorio'), value =>
 			testRequiredPreCadastro(value)
 		),
-		// cargoEmpresa: Yup.string().test('cargoEmpresa', translate('campoObrigatorio'), value =>
-		// 	testRequiredPreCadastro(value)
-		// ),
+		cargoEmpresa: Yup.string().test('cargoEmpresa', translate('campoObrigatorio'), value =>
+			testRequiredPreCadastro(value)
+		),
 		email: Yup.string()
 			.email('Email invalído.')
 			.test('email', translate('campoObrigatorio'), value => testRequiredPreCadastro(value)),
@@ -535,25 +533,25 @@ export default function DadosBasicos({
 		// 	translate('adicionePeloMenosUmContato'),
 		// 	value => value.length > 0
 		// ),
-		// aceitoCondicoes: Yup.string().test('aceitoCondicoes', translate('campoObrigatorio'), value =>
-		// 	testCheckedRequired(value)
-		// ),
-		// dataNascimento: Yup.string()
-		// 	.nullable()
-		// 	.test('dataNascimento', messageValidateData, value => testDataNascimento(value)),
-		// cpfMei: Yup.string().test('cpf', messageValidateCPF, value => testCpfMei(value)),
-		// pisPasepNit: Yup.string().test('pisPasepNit', translate('campoObrigatorio'), value =>
-		// 	testTipoEmpresaMei(value)
-		// ),
-		// estadoNascimento: Yup.string().test('estadoNascimento', translate('campoObrigatorio'), value =>
-		// 	testSelectRequiredMei(value)
-		// ),
-		// cidadeNascimento: Yup.string().test('cidadeNascimento', translate('campoObrigatorio'), value =>
-		// 	testSelectRequiredMei(value)
-		// ),
-		// sexo: Yup.string().test('optanteSimplesNacional', translate('campoObrigatorio'), value =>
-		// 	testSelectRequiredMei(value)
-		// )
+		aceitoCondicoes: Yup.string().test('aceitoCondicoes', translate('campoObrigatorio'), value =>
+			testCheckedRequired(value)
+		),
+		dataNascimento: Yup.string()
+			.nullable()
+			.test('dataNascimento', messageValidateData, value => testDataNascimento(value)),
+		cpfMei: Yup.string().test('cpf', messageValidateCPF, value => testCpfMei(value)),
+		pisPasepNit: Yup.string().test('pisPasepNit', translate('campoObrigatorio'), value =>
+			testTipoEmpresaMei(value)
+		),
+		estadoNascimento: Yup.string().test('estadoNascimento', translate('campoObrigatorio'), value =>
+			testSelectRequiredMei(value)
+		),
+		cidadeNascimento: Yup.string().test('cidadeNascimento', translate('campoObrigatorio'), value =>
+			testSelectRequiredMei(value)
+		),
+		sexo: Yup.string().test('optanteSimplesNacional', translate('campoObrigatorio'), value =>
+			testSelectRequiredMei(value)
+		)
 	});
 
 	const {
@@ -882,259 +880,260 @@ export default function DadosBasicos({
 	};
 
 	return (
-		// <Form id='dadosBasico' onSubmit={handleSubmit}>
-		// 	<Fragment>
-		// 		{!empresa && (
-		// 			<Box paddingTop={`${theme.spacing(1)}px`}>
-		// 				<Card>
-		// 					<CardContent>
-		// 						<Box display='flex' flexDirection='row'>
-		// 							<FormSelect
-		// 								label={`${translate('labelSelectFornecedor')}`}
-		// 								labelInitialItem={translate('selecioneOpcao')}
-		// 								items={TIPO_EMPRESA}
-		// 								value={tipoEmpresa.value}
-		// 								onChange={event => {
-		// 									resetForm();
-		// 									setTipoEmpresa(event.target.value);
-		// 								}}
-		// 								error={checkError(submitCount, metadataTipoEmpresa)}
-		// 								width='300px'
-		// 							/>
-		// 						</Box>
-		// 						<Box display='flex' flexDirection='row'>
-		// 							<RadioGroup
-		// 								value={tipoCadastro.value}
-		// 								onChange={event => {
-		// 									setTipoCadastro(event.target.value);
-		// 								}}
-		// 								row
-		// 							>
-		// 								<FormControlLabel
-		// 									value={CADASTRO_CENTRALIZADO.codigo}
-		// 									control={<Radio color='primary' />}
-		// 									label={`${translate('cadastroCentralizadoApenasLicitacoes')}`}
-		// 									labelPlacement='end'
-		// 								/>
-		// 								<FormControlLabel
-		// 									value={CADASTRO_DESCENTRALIZADO.codigo}
-		// 									control={<Radio color='primary' />}
-		// 									label={`${translate('cadastroDescentralizadoApenasUsuariosCemig')}`}
-		// 									labelPlacement='end'
-		// 								/>
-		// 							</RadioGroup>
-		// 						</Box>
-		// 						<Mensagem>{getMensagem()}</Mensagem>
-		// 					</CardContent>
-		// 				</Card>
-		// 			</Box>
-		// 		)}
-		// 		{tipoEmpresa.value !== 0 && (
-		// 			<Fragment>
-		// 				{tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo && (
-		// 					<ContatoCliente
-		// 						formulario={{ submitCount, getFieldProps }}
-		// 						itensAnalise={itensAnalise}
-		// 						setItensAnalise={setItensAnalise}
-		// 						comentarios={comentarios}
-		// 						setComentarios={setComentarios}
-		// 						preCadastro={preCadastro}
-		// 						user={preCadastro ? null : user}
-		// 						historicoEmpresa={preCadastro ? false : empresa.Historico}
-		// 						disableEdit={
-		// 							preCadastro ? null : (
-		// 								getDisableEdit(
-		// 									user,
-		// 									empresa.AnaliseCadastro,
-		// 									getStatusItem(itensAnalise, 'Contato_Cliente')
-		// 								)
-		// 							)
-		// 						}
-		// 						statusEmpresa={
-		// 							empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 						}
-		// 					/>
-		// 				)}
+		<Form id='dadosBasico' onSubmit={handleSubmit}>
+			<Fragment>
+				{!empresa && (
+					<Box paddingTop={`${theme.spacing(1)}px`}>
+						<Card>
+							<CardContent>
+								<Box display='flex' flexDirection='row'>
+									<FormSelect
+										label={`${translate('labelSelectFornecedor')}`}
+										labelInitialItem={translate('selecioneOpcao')}
+										items={TIPO_EMPRESA}
+										value={tipoEmpresa.value}
+										onChange={event => {
+											console.log('TIPO DE EMPRESA');
+											console.log(tipoEmpresa.value);
+											resetForm();
+											setTipoEmpresa(event.target.value);
+										}}
+										error={checkError(submitCount, metadataTipoEmpresa)}
+										width='300px'
+									/>
+								</Box>
+								<Box display='flex' flexDirection='row'>
+									<RadioGroup
+										value={tipoCadastro.value}
+										onChange={event => {
+											setTipoCadastro(event.target.value);
+										}}
+										row
+									>
+										<FormControlLabel
+											value={CADASTRO_CENTRALIZADO.codigo}
+											control={<Radio color='primary' />}
+											label={`${translate('cadastroCentralizadoApenasLicitacoes')}`}
+											labelPlacement='end'
+										/>
+										<FormControlLabel
+											value={CADASTRO_DESCENTRALIZADO.codigo}
+											control={<Radio color='primary' />}
+											label={`${translate('cadastroDescentralizadoApenasUsuariosCemig')}`}
+											labelPlacement='end'
+										/>
+									</RadioGroup>
+								</Box>
+								<Mensagem>{getMensagem()}</Mensagem>
+							</CardContent>
+						</Card>
+					</Box>
+				)}
+				{tipoEmpresa.value !== 0 && (
+					<Fragment>
+						{tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo && (
+							<ContatoCliente
+								formulario={{ submitCount, getFieldProps }}
+								itensAnalise={itensAnalise}
+								setItensAnalise={setItensAnalise}
+								comentarios={comentarios}
+								setComentarios={setComentarios}
+								preCadastro={preCadastro}
+								user={preCadastro ? null : user}
+								historicoEmpresa={preCadastro ? false : empresa.Historico}
+								disableEdit={
+									preCadastro ? null : (
+										getDisableEdit(
+											user,
+											empresa.AnaliseCadastro,
+											getStatusItem(itensAnalise, 'Contato_Cliente')
+										)
+									)
+								}
+								statusEmpresa={
+									empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+								}
+							/>
+						)}
 
-		// 				<DadosGerais
-		// 					formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? false : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? null : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Dados_Gerais')
-		// 							)
-		// 						)
-		// 					}
-		// 					statusEmpresa={
-		// 						empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 					}
-		// 				/>
+						<DadosGerais
+							formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? false : empresa.Historico}
+							disableEdit={
+								preCadastro ? null : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Dados_Gerais')
+									)
+								)
+							}
+							statusEmpresa={
+								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+							}
+						/>
 
-		// 				{tipoEmpresa.value === MEI.id && (
-		// 					<DadosPessoaFisica
-		// 						estadoList={estadoList}
-		// 						formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 						itensAnalise={itensAnalise}
-		// 						setItensAnalise={setItensAnalise}
-		// 						comentarios={comentarios}
-		// 						setComentarios={setComentarios}
-		// 						preCadastro={preCadastro}
-		// 						user={preCadastro ? null : user}
-		// 						historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 						disableEdit={
-		// 							preCadastro ? (
-		// 								false
-		// 							) : (
-		// 								getDisableEdit(
-		// 									user,
-		// 									empresa.AnaliseCadastro,
-		// 									getStatusItem(itensAnalise, 'Dados_Pessoa_Fisica')
-		// 								)
-		// 							)
-		// 						}
-		// 						statusEmpresa={
-		// 							empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 						}
-		// 					/>
-		// 				)}
-		// 				<DadosEndereco
-		// 					estadoList={estadoList}
-		// 					formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? (
-		// 							false
-		// 						) : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Dados_Endereco')
-		// 							)
-		// 						)
-		// 					}
-		// 					statusEmpresa={
-		// 						empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 					}
-		// 				/>
-		// 				<DadosAcessoUsuario
-		// 					formulario={{
-		// 						submitCount,
-		// 						getFieldProps,
-		// 						setFieldValue,
-		// 						setFieldTouched
-		// 					}}
-		// 					mensagem={getMensagemDadosAcesso()}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? (
-		// 							false
-		// 						) : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Acesso_Sistema')
-		// 							)
-		// 						)
-		// 					}
-		// 					statusEmpresa={
-		// 						empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 					}
-		// 				/>
-		// 				<DadosContatosAdicionais
-		// 					formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? (
-		// 							false
-		// 						) : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Dados_Contatos_Adicionais')
-		// 							)
-		// 						)
-		// 					}
-		// 				/>
-		// 									<Box paddingTop={`${theme.spacing(1)}px`}>
-		// 						<Card>
-		// 							<CardContent>
-		// 								<Fragment>
-		// 									<p>
-		// 										Declaro que todas as informações aqui prestadas são verdadeiras e a
-		// 										falsificação configura crime previsto no Código Penal Brasileiro (Art.
-		// 										297-299) passível de apuração na forma da lei, bem como pode ser enquadrada
-		// 										como litigância de má fé.
-		// 									</p>
-		// 									<Box
-		// 										style={{
-		// 											marginTop: 16,
-		// 											marginBottom: 16,
-		// 											borderRadius: 5,
-		// 											padding: 8,
-		// 											width: '275px',
-		// 											border: `${checkError(submitCount, metadataAceitoCondicoes)
-		// 												? 1
-		// 												: 0}px solid red`
-		// 										}}
-		// 									>
-		// 										<FormControlLabel
-		// 											control={
-		// 												<Checkbox
-		// 													key={key}
-		// 													checked={aceitoCondicoes.value}
-		// 													value={aceitoCondicoes.value}
-		// 													onChange={event => {
-		// 														setKey(key + 1);
-		// 														setFieldValue('aceitoCondicoes', event.target.checked);
-		// 														setFieldTouched('aceitoCondicoes', true);
-		// 													}}
-		// 													preCadastro={preCadastro}
-		// 												/>
-		// 											}
-		// 											label='Li e aceito os termos e condições.'
-		// 										/>
-		// 										{checkError(submitCount, metadataAceitoCondicoes) && (
-		// 											<FormHelperText style={{ color: 'red' }}>
-		// 												{metadataAceitoCondicoes.error}
-		// 											</FormHelperText>
-		// 										)}
-		// 									</Box>
-		// 								</Fragment>
-		// 							</CardContent>
-		// 						</Card>
-		// 					</Box>
+						{tipoEmpresa.value === MEI.id && (
+							<DadosPessoaFisica
+								estadoList={estadoList}
+								formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+								itensAnalise={itensAnalise}
+								setItensAnalise={setItensAnalise}
+								comentarios={comentarios}
+								setComentarios={setComentarios}
+								preCadastro={preCadastro}
+								user={preCadastro ? null : user}
+								historicoEmpresa={preCadastro ? null : empresa.Historico}
+								disableEdit={
+									preCadastro ? (
+										false
+									) : (
+										getDisableEdit(
+											user,
+											empresa.AnaliseCadastro,
+											getStatusItem(itensAnalise, 'Dados_Pessoa_Fisica')
+										)
+									)
+								}
+								statusEmpresa={
+									empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+								}
+							/>
+						)}
+						<DadosEndereco
+							estadoList={estadoList}
+							formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? null : empresa.Historico}
+							disableEdit={
+								preCadastro ? (
+									false
+								) : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Dados_Endereco')
+									)
+								)
+							}
+							statusEmpresa={
+								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+							}
+						/>
+						<DadosAcessoUsuario
+							formulario={{
+								submitCount,
+								getFieldProps,
+								setFieldValue,
+								setFieldTouched
+							}}
+							mensagem={getMensagemDadosAcesso()}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? null : empresa.Historico}
+							disableEdit={
+								preCadastro ? (
+									false
+								) : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Acesso_Sistema')
+									)
+								)
+							}
+							statusEmpresa={
+								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+							}
+						/>
+						<DadosContatosAdicionais
+							formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? null : empresa.Historico}
+							disableEdit={
+								preCadastro ? (
+									false
+								) : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Dados_Contatos_Adicionais')
+									)
+								)
+							}
+						/>
+											<Box paddingTop={`${theme.spacing(1)}px`}>
+								<Card>
+									<CardContent>
+										<Fragment>
+											<p>
+												Declaro que todas as informações aqui prestadas são verdadeiras e a
+												falsificação configura crime previsto no Código Penal Brasileiro (Art.
+												297-299) passível de apuração na forma da lei, bem como pode ser enquadrada
+												como litigância de má fé.
+											</p>
+											<Box
+												style={{
+													marginTop: 16,
+													marginBottom: 16,
+													borderRadius: 5,
+													padding: 8,
+													width: '275px',
+													border: `${checkError(submitCount, metadataAceitoCondicoes)
+														? 1
+														: 0}px solid red`
+												}}
+											>
+												<FormControlLabel
+													control={
+														<Checkbox
+															key={key}
+															checked={aceitoCondicoes.value}
+															value={aceitoCondicoes.value}
+															onChange={event => {
+																setKey(key + 1);
+																setFieldValue('aceitoCondicoes', event.target.checked);
+																setFieldTouched('aceitoCondicoes', true);
+															}}
+															preCadastro={preCadastro}
+														/>
+													}
+													label='Li e aceito os termos e condições.'
+												/>
+												{checkError(submitCount, metadataAceitoCondicoes) && (
+													<FormHelperText style={{ color: 'red' }}>
+														{metadataAceitoCondicoes.error}
+													</FormHelperText>
+												)}
+											</Box>
+										</Fragment>
+									</CardContent>
+								</Card>
+							</Box>
 						
-		// 			</Fragment>
-		// 		)}
-		// 	</Fragment>
-		// </Form>
-		<div>teste</div>
+					</Fragment>
+				)}
+			</Fragment>
+		</Form>
 	);
 }

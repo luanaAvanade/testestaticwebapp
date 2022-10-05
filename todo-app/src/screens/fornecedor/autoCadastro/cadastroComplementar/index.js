@@ -34,7 +34,7 @@ import {
 import { DisplayDiv } from './style';
 import { Done, Clear } from '@material-ui/icons';
 
-//import { Confirm, Button, Card, Modal } from 'react-axxiom';
+import { Confirm, Button, Card, Modal } from '@/components';
 import { BotoesCadastro } from '@/screens/fornecedor/autoCadastro/componentesLayout/botoesCadastro';
 import { StatusEmpresa } from '@/screens/fornecedor/autoCadastro/componentesLayout/statusEmpresa';
 import { getDisableEdit } from '../aprovacao/util';
@@ -651,104 +651,103 @@ export default function CadastroComplemetar() {
 	};
 
 	return (
-		// <LayoutContent noCard>
-		// 	<Title text={paths.getTitle(paths.getCurrentPath(history))} />
+		<LayoutContent noCard>
+			<Title text={paths.getTitle(paths.getCurrentPath(history))} />
 
-		// 	{comentarios.count > 0 && <p>{comentarios[0].Coment}</p>}
-		// 	<Modal
-		// 		open={modalLembreteAtualizacaoCadastro}
-		// 		handleClose={() => setModalLembreteAtualizacaoCadastro(false)}
-		// 		onClickButton={() => setModalLembreteAtualizacaoCadastro(false)}
-		// 		title={
-		// 			<h3 align='center'>
-		// 				{translate('Olá ')} {user !== null ? user.nome : ''}
-		// 			</h3>
-		// 		}
-		// 		textButton={translate('ok')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	>
-		// 		<Typography variant='h5' align='center'>
-		// 			{translate('msgAlertaAtualizacaoCadastro')}
-		// 		</Typography>
-		// 	</Modal>
+			{comentarios.count > 0 && <p>{comentarios[0].Coment}</p>}
+			<Modal
+				open={modalLembreteAtualizacaoCadastro}
+				handleClose={() => setModalLembreteAtualizacaoCadastro(false)}
+				onClickButton={() => setModalLembreteAtualizacaoCadastro(false)}
+				title={
+					<h3 align='center'>
+						{translate('Olá ')} {user !== null ? user.nome : ''}
+					</h3>
+				}
+				textButton={translate('ok')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			>
+				<Typography variant='h5' align='center'>
+					{translate('msgAlertaAtualizacaoCadastro')}
+				</Typography>
+			</Modal>
 
-		// 	<Confirm
-		// 		open={openSalvarDados}
-		// 		handleClose={() => closeModal()}
-		// 		handleSuccess={() => alterTab()}
-		// 		title={translate('salvarDados')}
-		// 		text={translate('desejaSalvarDados')}
-		// 		textButtonSuccess={translate('salvar')}
-		// 		textButtonCancel={translate('descartarAlteracoes')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	/>
+			<Confirm
+				open={openSalvarDados}
+				handleClose={() => closeModal()}
+				handleSuccess={() => alterTab()}
+				title={translate('salvarDados')}
+				text={translate('desejaSalvarDados')}
+				textButtonSuccess={translate('salvar')}
+				textButtonCancel={translate('descartarAlteracoes')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			/>
 			
-		// 		<Box justifyContent='space-between' display='flex'>
-		// 			<Box>
-		// 				<Tabs
-		// 					value={tab}
-		// 					onChange={(event, newValue) => setTabWithChangesCheck(newValue)}
-		// 					indicatorColor='primary'
-		// 					textcolor='primary'
-		// 				>
+				<Box justifyContent='space-between' display='flex'>
+					<Box>
+						<Tabs
+							value={tab}
+							onChange={(event, newValue) => setTabWithChangesCheck(newValue)}
+							indicatorColor='primary'
+							textcolor='primary'
+						>
 							
-		// 						<Tab
-		// 							value={TAB_DADOS_BASICOS}
-		// 							label={translate('dadosBasicos')}
-		// 							icon={getIconIsValid(dadosBasicosIsValid)}
-		// 						/>
+								<Tab
+									value={TAB_DADOS_BASICOS}
+									label={translate('dadosBasicos')}
+									icon={getIconIsValid(dadosBasicosIsValid)}
+								/>
 							
 
-		// 						<Tab
-		// 							value={TAB_DADOS_COMPLEMENTAR}
-		// 							label={translate('dadosComplementares')}
-		// 							icon={getIconIsValid(dadosComplementaresIsValid)}
-		// 						/>
+								<Tab
+									value={TAB_DADOS_COMPLEMENTAR}
+									label={translate('dadosComplementares')}
+									icon={getIconIsValid(dadosComplementaresIsValid)}
+								/>
 							
-		// 						<Tab
-		// 							value={TAB_DADOS_FINANCEIROS}
-		// 							label={translate('dadosFinanceiros')}
-		// 							icon={getIconIsValid(dadosFinanceirosIsValid)}
-		// 						/>
+								<Tab
+									value={TAB_DADOS_FINANCEIROS}
+									label={translate('dadosFinanceiros')}
+									icon={getIconIsValid(dadosFinanceirosIsValid)}
+								/>
 							
-		// 						<Tab
-		// 							value={TAB_DADOS_SOCIOS}
-		// 							label={translate('dadosSocios')}
-		// 							icon={getIconIsValid(socioIsValid)}
-		// 						/>
-		// 					</Tabs>
-		// 			</Box>
-		// 		</Box>
-		// 		<Fragment>
-		// 			<DisplayDiv visible={tab === TAB_DADOS_BASICOS}>
-		// 				<DadosBasicos
-		// 					preCadastro
-		// 			acao={acao}
-		// 			setAcao={setAcao}
-		// 			setDadosBasicosIsValid={setDadosBasicosIsValid}
-		// 				/>
-		// 				<BotoesCadastro
-		// 					setAcao={setAcao}
-		// 					enviarCadastro={enviarCadastro}
-		// 					empresaFindById={empresaFindById}
-		// 					//disableEdit={getDisableEdit(user, empresa.AnaliseCadastro, null)}
-		// 					finalizarAnalise={finalizarAnalise}
-		// 					statusEmpresa={"Pendente Envio"}
-		// 				/>
-		// 			</DisplayDiv>
+								<Tab
+									value={TAB_DADOS_SOCIOS}
+									label={translate('dadosSocios')}
+									icon={getIconIsValid(socioIsValid)}
+								/>
+							</Tabs>
+					</Box>
+				</Box>
+				<Fragment>
+					<DisplayDiv visible={tab === TAB_DADOS_BASICOS}>
+						<DadosBasicos
+							preCadastro
+					acao={acao}
+					setAcao={setAcao}
+					setDadosBasicosIsValid={setDadosBasicosIsValid}
+						/>
+						<BotoesCadastro
+							setAcao={setAcao}
+							enviarCadastro={enviarCadastro}
+							empresaFindById={empresaFindById}
+							//disableEdit={getDisableEdit(user, empresa.AnaliseCadastro, null)}
+							finalizarAnalise={finalizarAnalise}
+							statusEmpresa={"Pendente Envio"}
+						/>
+					</DisplayDiv>
 
-		// 			<DisplayDiv visible={tab === TAB_DADOS_COMPLEMENTAR}>
-		// 				<DadosComplementar/>
-		// 			</DisplayDiv>
-		// 			<DisplayDiv visible={tab === TAB_DADOS_FINANCEIROS}>
-		// 				<DadosFinanceiros/>
-		// 			</DisplayDiv>
-		// 			<DisplayDiv visible={tab === TAB_DADOS_SOCIOS}>
-		// 				<DadosSocios/>
-		// 			</DisplayDiv>
-		// 		 </Fragment> 
+					<DisplayDiv visible={tab === TAB_DADOS_COMPLEMENTAR}>
+						<DadosComplementar/>
+					</DisplayDiv>
+					<DisplayDiv visible={tab === TAB_DADOS_FINANCEIROS}>
+						<DadosFinanceiros/>
+					</DisplayDiv>
+					<DisplayDiv visible={tab === TAB_DADOS_SOCIOS}>
+						<DadosSocios/>
+					</DisplayDiv>
+				 </Fragment> 
 			 
-		// </LayoutContent>
-		<div>teste</div>
+		</LayoutContent>
 	);
 }

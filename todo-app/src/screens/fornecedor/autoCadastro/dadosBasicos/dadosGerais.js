@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//import { FormSelect, FormInput, Card, Confirm, FormSelectWithSearch } from 'react-axxiom';
+import { FormSelect, FormInput, Card, Confirm, FormSelectWithSearch } from '@/components';
 import {
 	Box,
 	CardHeader,
@@ -305,31 +305,31 @@ export default function DadosGerais({
 		}
 	};
 
-	// const getSelectSearch = (list, label, placeholder) => {
-	// 	return (
-	// 		<FormSelectWithSearch
-	// 			key={key}
-	// 			placeholder={placeholder}
-	// 			label={label}
-	// 			options={list}
-	// 			getOptionLabel={option => option.Codigo + '-' + option.Descricao}
-	// 			value={getAtividade(
-	// 				tipoEmpresa.value === PESSOAJURIDICA.id
-	// 					? atividadeEconomicaPrincipal.value
-	// 					: ocupacaoPrincipal.value
-	// 			)}
-	// 			onChange={(event, selected) => setAtividade(selected)}
-	// 			onFocus={() => setTouchedAtividade()}
-	// 			error={checkError(submitCount, metadataAtividadeEconomicaPrincipal)}
-	// 			disabled={disableEdit}
-	// 			required
-	// 		/>
-	// 	);
-	// };
+	const getSelectSearch = (list, label, placeholder) => {
+		return (
+			<FormSelectWithSearch
+				key={key}
+				placeholder={placeholder}
+				label={label}
+				options={list}
+				getOptionLabel={option => option.Codigo + '-' + option.Descricao}
+				value={getAtividade(
+					tipoEmpresa.value === PESSOAJURIDICA.id
+						? atividadeEconomicaPrincipal.value
+						: ocupacaoPrincipal.value
+				)}
+				onChange={(event, selected) => setAtividade(selected)}
+				onFocus={() => setTouchedAtividade()}
+				error={checkError(submitCount, metadataAtividadeEconomicaPrincipal)}
+				disabled={disableEdit}
+				required
+			/>
+		);
+	};
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Card>
+			<Card>
 				<Confirm
 					open={modalCnpjJaCadastrado}
 					handleClose={limparCNPJ}
@@ -460,7 +460,7 @@ export default function DadosGerais({
 						</Box>
 					</Box>
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }
