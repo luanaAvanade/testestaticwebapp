@@ -13,7 +13,6 @@ import { useFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { Card, FormInput, Button } from '@/components';
-import { CemigVerde } from '@/assets';
 import { Image, ContentLogin, Background } from './style';
 import { Footer } from '@/layout';
 import { translate } from '@/locales';
@@ -121,7 +120,6 @@ export default function EsqueciEmailEnvia() {
 			>
 				<Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
 					<Box display='flex' justifyContent='space-around'>
-						<Image src={CemigVerde} />
 					</Box>
 					<BoxTextRecuperaAcesso>
 						<Typography variant='h4'>

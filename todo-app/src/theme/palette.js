@@ -5,9 +5,9 @@ const {
 	black,
 	neutral,
 	muted,
-	axxiom,
-	lightAxxiom,
-	darkAxxiom,
+	oficial,
+	light,
+	dark,
 	green,
 	lightGreen,
 	darkGreen,
@@ -43,9 +43,9 @@ export default {
 	},
 	primary: {
 		contrastText: white,
-		main: axxiom,
-		light: lightAxxiom,
-		dark: darkAxxiom
+		main: oficial,
+		light: light,
+		dark: dark
 	},
 	secondary: {
 		contrastText: white,

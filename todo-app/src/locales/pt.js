@@ -45,8 +45,8 @@ export default {
 		cadastroCentralizadoApenasLicitacoes: 'Cadastro Centralizado (Apenas para Licitações)',
 		cadastroComplementar: 'Cadastro Complementar',
 		cadastroDescentralizado: 'Descentralizado',
-		cadastroDescentralizadoApenasUsuariosCemig:
-			'Cadastro Descentralizado (Apenas para Usuários Cemig)',
+		cadastroDescentralizadoApenasUsuarios:
+			'Cadastro Descentralizado (Apenas para Usuários Internos da companhia)',
 		cadastroEfetuadoComSucesso: 'Cadastro Efetuado com Sucesso!',
 		cadastroSalvoComSucesso:
 			'Cadastro salvo com sucesso.<br/>Alterações serão permitidas até o<br/> inicio de analise!',
@@ -155,7 +155,7 @@ export default {
 		email: 'E-mail',
 		emailConfirmadoComSucesso: 'Seu email foi confirmado com sucesso!',
 		emailContatoAdicional: 'E-mail',
-		emailContatoCemig: 'E-mail',
+		emailContato: 'E-mail',
 		emailEnviadoComSucesso: 'Email enviado com sucesso!',
 		emailInvalido: 'Email inválido',
 		emailjacadastrado: 'Email já Cadastrado',
@@ -168,7 +168,7 @@ export default {
 		entrar: 'Entrar',
 		enviarCadastro: 'Enviar cadastro',
 		erroInesperado:
-			'Ocorreu um erro inesperado no sistema.<br/><br/>Informe seu login e imagem do erro <strong><a style="color: white;" href="mailto:suporte.gicaf@axxiom.com.br?subject=Soma Fornecedores - Erro no sistema.">clicando aqui</a></strong>.',
+			'Ocorreu um erro inesperado no sistema.<br/><br/>Informe seu login e imagem do erro <strong><a style="color: white;" href="subject=Soma Fornecedores - Erro no sistema.">clicando aqui</a></strong>.',
 		envieEmailRecebaOLink: 'Envie o e-mail e receba o link para redefinição de senha',
 		erroAlteracaoRegistro: 'Ocorreu erro na alteração!',
 		erroAlterarGrupoRespondente: 'Erro ao alterar grupo de respondente',
@@ -245,7 +245,7 @@ export default {
 		fornecedorAtualizadoSucesso:
 			'Solicitação de cadastro enviada com sucesso!<br/><br/>Alterações serão permitidas até o início da análise.',
 		fornecedorCadatradoSucesso:
-			'Fornecedor Cadastrado com Sucesso!</br></br>Você receberá um e-mail para confirmação do seu cadastro.</br></br><span style="color:orange;">Caso não tenha recebido, verifique sua caixa de span ou lixeira.</span>',
+			'Fornecedor Cadastrado com Sucesso!',
 		fornecedorDistribuidor: 'Distribuidor',
 		fornecedorEmpresaEstrangeira:
 			'Fornecedor Pessoa Jurídica Internacional - Dados Fornecedor - Centralizado',
@@ -282,8 +282,8 @@ export default {
 		inativo: 'Inativo',
 		incluir: 'Incluir',
 		indicadoresForaEspecificadoRef: 'Indicadores fora do especificado como referência do mercado',
-		indicadoresForaEspecificadoRefMercUnivCemig:
-			'Indicadores fora do especificado como referência do mercado e do universo CEMIG',
+		indicadoresForaEspecificadoRefMercUniv:
+			'Indicadores fora do especificado como referência do mercado',
 		individualmente: 'Individualmente',
 		informeCpfCnpj: 'Informe o CPF/CNPJ.',
 		informeParteDoCodigoOuDescricao: 'Informe parte do código ou descrição.',
@@ -312,21 +312,21 @@ export default {
 		minhasAnalises: 'Minhas Análises',
 		moda: 'Moda',
 		msgAlertaAtualizacaoCadastro:
-			'Seja Bem Vindo ao Sistema de Auto Cadastro da Cemig. Mantenha seus dados sempre atualizados, e tenha a garantia de receber todos os comunicados e notificações necessárias para acompanhar o andamento de ações e validade do seu cadastro.',
+			'Seja Bem Vindo ao Sistema de Auto Cadastro. Mantenha seus dados sempre atualizados, e tenha a garantia de receber todos os comunicados e notificações necessárias para acompanhar o andamento de ações e validade do seu cadastro.',
 		msgCadastroCentralizadoPJ:
-			'Este processo é somente para fornecedor de serviços e/ou material com interesse na participação de processos Licitatórios da Cemig, Empreiteiras para execução de Obras e para compartilhamento de infraestrutura, sendo necessário o cumprimento de todo o processo de cadastramento, com Habilitação Jurídica, Econômico-Financeira, Fiscal e Qualificação Técnica. ',
+			'Este processo é somente para fornecedor de serviços e/ou material com interesse na participação de processos Licitatórios, Empreiteiras para execução de Obras e para compartilhamento de infraestrutura, sendo necessário o cumprimento de todo o processo de cadastramento, com Habilitação Jurídica, Econômico-Financeira, Fiscal e Qualificação Técnica. ',
 		msgCadastroCentralizadoMEI:
-			'Este processo é somente para fornecedor de serviços e/ou material com interesse na participação de processos Licitatórios da Cemig e para compartilhamento de infraestrutura, sendo necessário o cumprimento de todo o processo de cadastramento, com Habilitação Jurídica, Econômico-Financeira, Fiscal e Qualificação Técnica.',
+			'Este processo é somente para fornecedor de serviços e/ou material com interesse na participação de processos Licitatórios e para compartilhamento de infraestrutura, sendo necessário o cumprimento de todo o processo de cadastramento, com Habilitação Jurídica, Econômico-Financeira, Fiscal e Qualificação Técnica.',
 		msgCadastroDescentralizadoMEIePJ:
-			'Este processo é somente para fornecedor de serviços e/ou material para as quais é dispensado o processo licitatório de acordo com as normas de governança da Companhia, solicitado por um usuário da Cemig. Este tipo de compra é especifico e pontual. *Este cadastro somente será válido, caso seja solicitado pelo usuário da Cemig. **Caso o seu cadastro não tenha sido solicitado, favor realizar o procedimento de cadastro centralizado, caso contrário o processo não será efetivado.',
+			'Este processo é somente para fornecedor de serviços e/ou material para as quais é dispensado o processo licitatório de acordo com as normas de governança da Companhia, solicitado por um usuário. Este tipo de compra é especifico e pontual. *Este cadastro somente será válido, caso seja solicitado pelo usuário. **Caso o seu cadastro não tenha sido solicitado, favor realizar o procedimento de cadastro centralizado, caso contrário o processo não será efetivado.',
 		msgMeiCadastroCentralizado:
 			'Estes dados são referentes ao MEI (Microempreendedor Individual), através deste acesso será realizado todos os procedimentos de cadastro e alteração do fornecedor.',
 		msgMeiCadastroDescentralizado:
-			'Estes dados são referentes ao acesso para Cadastro desentralizado - MEI (Microempreendedor Individual), fornecedor de serviços e/ou material para as quais é dispensado o processo licitatório de acordo com as normas de governança da Companhia, solicitado por um usuário da Cemig. \n *Este cadastro somente será válido, caso seja solicitado pelo usuário da Cemig.',
+			'Estes dados são referentes ao acesso para Cadastro desentralizado - MEI (Microempreendedor Individual), fornecedor de serviços e/ou material para as quais é dispensado o processo licitatório de acordo com as normas de governança da Companhia, solicitado por um usuário. \n *Este cadastro somente será válido, caso seja solicitado pelo usuário.',
 		msgPjCadastroCentralizado:
-			'Estes dados são referentes ao responsável da empresa pelo cadastro Cemig, caso este não seja o representante legal da empresa, será necessário o preenchimento do formulário de autorização devidamente assinado de acordo com o instrumento legal da empresa que será exigido na próxima etapa do cadastro. \n Clique aqui para download do formulário.',
+			'Estes dados são referentes ao responsável da empresa pelo cadastro, caso este não seja o representante legal da empresa, será necessário o preenchimento do formulário de autorização devidamente assinado de acordo com o instrumento legal da empresa que será exigido na próxima etapa do cadastro. \n Clique aqui para download do formulário.',
 		msgPjCadastroDescentralizado:
-			'Estes dados são referentes ao acesso para Cadastro Pessoa Jurídica Descentralizada fornecedora de serviços e/ou material para as quais é dispensado o processo licitatório de acordo com as normas de governança da Companhia, solicitado por um usuário da Cemig. \n *Este cadastro somente será válido, caso seja solicitado pelo usuário da Cemig.',
+			'Estes dados são referentes ao acesso para Cadastro Pessoa Jurídica Descentralizada fornecedora de serviços e/ou material para as quais é dispensado o processo licitatório de acordo com as normas de governança da Companhia, solicitado por um usuário. \n *Este cadastro somente será válido, caso seja solicitado pelo usuário.',
 		msgErroRobo:
 			'Ocorreu um erro no processamento dos arquivos financeiros, será necessário informar os dados do Balanço Patrimonial e DRE abaixo.',
 		municipio: 'Municipio',
@@ -338,7 +338,7 @@ export default {
 		nomeCategoria: 'Nome da Categoria',
 		nomeCompleto: 'Nome Completo',
 		nomeContatoAdicional: 'Nome',
-		nomeContatoCemig: 'Nome do contato na Cemig',
+		nomeContato: 'Nome do contato',
 		nomeEmpresa: 'Nome (Razão Social)',
 		nomeFormula: 'Nome da Formula',
 		nomeFornecedor: 'Nome (Razão Social)',

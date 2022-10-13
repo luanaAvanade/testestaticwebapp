@@ -5,7 +5,6 @@ import useReactRouter from 'use-react-router';
 import { useFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import { Card, FormInput, Button } from '@/components';
-import { CemigVerde } from '@/assets';
 import { Image, ContentLogin, Background, BoxTextRecuperaAcesso } from './style';
 import { Footer } from '@/layout';
 import { translate } from '@/locales';
@@ -93,7 +92,6 @@ export default function EsqueciMeuEmail() {
 			>
 				<Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
 					<Box display='flex' justifyContent='space-around'>
-						<Image src={CemigVerde} />
 					</Box>
 
 					<BoxTextRecuperaAcesso>

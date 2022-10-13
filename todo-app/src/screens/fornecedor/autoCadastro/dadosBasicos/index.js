@@ -194,8 +194,8 @@ export default function DadosBasicos({
 		setValues({
 			tipoCadastro: dados.TipoCadastro,
 			tipoEmpresa: dados.TipoEmpresa,
-			nomeContatoCemig: dados.ContatoSolicitante ? dados.ContatoSolicitante.NomeContato : '',
-			emailContatoCemig: dados.ContatoSolicitante ? dados.ContatoSolicitante.Email : '',
+			nomeContato: dados.ContatoSolicitante ? dados.ContatoSolicitante.NomeContato : '',
+			emailContato: dados.ContatoSolicitante ? dados.ContatoSolicitante.Email : '',
 			cnpj: dados.CNPJ,
 			nomeEmpresa: dados.NomeEmpresa,
 			inscricaoEstadual: dados.InscricaoEstadual,
@@ -242,8 +242,8 @@ export default function DadosBasicos({
 	const initialValues = {
 		tipoCadastro: '',
 		tipoEmpresa: 0,
-		emailContatoCemig: '',
-		nomeContatoCemig: '',
+		emailContato: '',
+		nomeContato: '',
 		cnpj: '',
 		nomeEmpresa: '',
 		inscricaoEstadual: '',
@@ -313,7 +313,7 @@ export default function DadosBasicos({
 		return true;
 	};
 
-	const testEmailContatoCemig = value => {
+	const testEmailContato = value => {
 		if (tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo) {
 			if (!value) {
 				setMessageValidateEmail(translate('campoObrigatorio'));
@@ -328,7 +328,7 @@ export default function DadosBasicos({
 		return true;
 	};
 
-	const testNomeContatoCemig = value => {
+	const testNomeContato = value => {
 		if (tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo) {
 			if (!value) {
 				setMessageValidateEmail(translate('campoObrigatorio'));
@@ -451,15 +451,15 @@ export default function DadosBasicos({
 			testSelectRequired(value)
 		),
 		tipoCadastro: Yup.string().required(translate('campoObrigatorio')),
-		// emailContatoCemig: Yup.string()
+		// emailContato: Yup.string()
 		// 	.nullable()
-		// 	.test('emailContatoCemigRequired', messageValidateEmail, value =>
-		// 		testEmailContatoCemig(value)
+		// 	.test('emailContatoRequired', messageValidateEmail, value =>
+		// 		testEmailContato(value)
 		// 	),
-		// nomeContatoCemig: Yup.string()
+		// nomeContato: Yup.string()
 		// 	.nullable()
-		// 	.test('nomeContatoCemig', translate('campoObrigatorio'), value =>
-		// 		testNomeContatoCemig(value)
+		// 	.test('nomeContato', translate('campoObrigatorio'), value =>
+		// 		testNomeContato(value)
 		// 	),
 
 		cnpj: Yup.string().test('CNPJ', messageValidateCNPJ, value => testeCNPJ(value)),
@@ -593,8 +593,8 @@ export default function DadosBasicos({
 	);
 
 	const {
-		emailContatoCemig,
-		nomeContatoCemig,
+		emailContato,
+		nomeContato,
 		cnpj,
 		nomeEmpresa,
 		isentoIE,
@@ -653,8 +653,8 @@ export default function DadosBasicos({
 	};
 
 	const setTipoCadastro = value => {
-		setFieldValue('nomeContatoCemig', '');
-		setFieldValue('emailContatoCemig', '');
+		setFieldValue('nomeContato', '');
+		setFieldValue('emailContato', '');
 		setFieldValue('tipoCadastro', value);
 	};
 
@@ -699,7 +699,7 @@ export default function DadosBasicos({
 		try {
 			const response = await EmpresaService.update(empresa.Id, getFornecedor());
 			if (response.data && response.data.Empresa_update) {
-				empresaFindById();
+				//empresaFindById();
 				callbackMensagemSucesso();
 			} else {
 				callbackError(translateWithHtml('erroInesperado'));
@@ -755,8 +755,8 @@ export default function DadosBasicos({
 
 		if (tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo) {
 			const contatoSolicitante = {};
-			contatoSolicitante.NomeContato = nomeContatoCemig;
-			contatoSolicitante.Email = emailContatoCemig;
+			contatoSolicitante.NomeContato = nomeContato;
+			contatoSolicitante.Email = emailContato;
 
 			newFornecedor.ContatoSolicitante = contatoSolicitante;
 		}
@@ -862,9 +862,6 @@ export default function DadosBasicos({
 
 	const callback = mensagem => {
 		enqueueSnackbar('', snackSuccess(mensagem, closeSnackbar));
-		if (!empresa) {
-			irParaLogin();
-		}
 	};
 
 	const callbackError = mensagem => {
@@ -919,7 +916,7 @@ export default function DadosBasicos({
 										<FormControlLabel
 											value={CADASTRO_DESCENTRALIZADO.codigo}
 											control={<Radio color='primary' />}
-											label={`${translate('cadastroDescentralizadoApenasUsuariosCemig')}`}
+											label={`${translate('cadastroDescentralizadoApenasUsuarios')}`}
 											labelPlacement='end'
 										/>
 									</RadioGroup>
@@ -1061,28 +1058,7 @@ export default function DadosBasicos({
 								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
 							}
 						/>
-						<DadosContatosAdicionais
-							formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-							itensAnalise={itensAnalise}
-							setItensAnalise={setItensAnalise}
-							comentarios={comentarios}
-							setComentarios={setComentarios}
-							preCadastro={preCadastro}
-							user={preCadastro ? null : user}
-							historicoEmpresa={preCadastro ? null : empresa.Historico}
-							disableEdit={
-								preCadastro ? (
-									false
-								) : (
-									getDisableEdit(
-										user,
-										empresa.AnaliseCadastro,
-										getStatusItem(itensAnalise, 'Dados_Contatos_Adicionais')
-									)
-								)
-							}
-						/>
-											<Box paddingTop={`${theme.spacing(1)}px`}>
+						<Box paddingTop={`${theme.spacing(1)}px`}>
 								<Card>
 									<CardContent>
 										<Fragment>

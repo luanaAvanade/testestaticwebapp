@@ -15,6 +15,8 @@ const Text = styled(Typography)`
   font-size: 11px !important 
   color: ${theme.palette.common.white} !important
   align-self: center
+  margin-right: ${theme.spacing(2)}px
+  padding-right: ${theme.spacing(2)}px
 `;
 
 const Image = styled.img`

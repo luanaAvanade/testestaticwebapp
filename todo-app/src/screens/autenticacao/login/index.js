@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useSnackbar } from 'notistack';
 import { Card, FormInput, Button } from '@/components';
-import CemigVerde from '@/assets/cemig-verde.png';
 import { Image, Background, ContentLogin, RouterLink } from './style';
 import Footer from '@/layout/footer';
 import { translate } from '@/locales';
@@ -148,7 +147,6 @@ export default function Login() {
 			>
 				<Card width={`${width}px`} minheight={`${minheight}px`} padding={theme.spacing(2)}>
 					<Box display='flex' justifyContent='space-around'>
-						<Image src={CemigVerde} />
 					</Box>
 
 					<Form onSubmit={handleSubmit}>

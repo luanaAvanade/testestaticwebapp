@@ -9,7 +9,14 @@ export const isAuthenticated = () => {
 	return true;
 };
 
-export const getUser = () => JSON.parse(localStorage.getItem(USER_KEY));
+export const getUser = () => {
+return	{
+	"usuario":{
+	   "nome":"Usuário Admin",
+	   "email":"usuarioAdmin@gmail.com"
+	}
+ }
+};
 
 export const setUser = user => {
 	if (user) {

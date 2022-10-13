@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import useReactRouter from 'use-react-router';
 import QueryString from 'query-string';
 import { Card, Button } from '@/components';
-import { CemigVerde } from '@/assets';
 import { Image, ContentLogin, Background, BoxContentText } from './style';
 import { Footer } from '@/layout';
 import { translate, translateWithHtml } from '@/locales';
@@ -63,7 +62,6 @@ export default function ConfirmacaoCadastroFornecedor() {
 				>
 					<Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
 						<Box display='flex' justifyContent='space-around'>
-							<Image src={CemigVerde} />
 						</Box>
 						<BoxContentText>
 							<Typography variant='h6'>

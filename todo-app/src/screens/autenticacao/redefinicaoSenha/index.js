@@ -7,7 +7,6 @@ import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import QueryString from 'query-string';
 import { Card, FormInput, Button } from '@/components';
-import { CemigVerde } from '@/assets';
 import { Image, ContentLogin, Background } from './style';
 import { Footer } from '@/layout';
 import { translate } from '@/locales';
@@ -97,7 +96,6 @@ export default function RedefinicaoSenha() {
 			>
 				<Card width={`@/..{width}px`} minheight={`@/..{minheight}px`} padding={theme.spacing(2)}>
 					<Box display='flex' justifyContent='space-around'>
-						<Image src={CemigVerde} />
 					</Box>
 
 					<Form onSubmit={handleSubmit}>

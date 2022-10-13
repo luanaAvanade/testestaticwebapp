@@ -50,7 +50,7 @@ export default function ResultadoAnalise({
 	montarCabecalho,
 	qualificacaoLista,
 	indicadoresForaRefMercado,
-	indicadoresForaRefMercadoRefCemig,
+	indicadoresForaRefMercadoRef,
 	inserirIcone
 }) {
 	const [
@@ -151,7 +151,7 @@ export default function ResultadoAnalise({
 	};
 
 	const algumIndForaFaixaBaseAtual = () => {
-		if (indicadoresForaRefMercadoRefCemig.length > 0) {
+		if (indicadoresForaRefMercadoRef.length > 0) {
 			return true;
 		} else {
 			return false;
@@ -315,14 +315,14 @@ export default function ResultadoAnalise({
 					<Box display='flex' flexDirection='row'>
 						<Box width='100%' paddingRight={`@/..{theme.spacing(1)}px`}>
 							<Card>
-								<CardHeader title={translate('indicadoresForaEspecificadoRefMercUnivCemig')} />
+								<CardHeader title={translate('indicadoresForaEspecificadoRefMercUniv')} />
 								<CardContent>
-									{indicadoresForaRefMercadoRefCemig.length > 0 && (
+									{indicadoresForaRefMercadoRef.length > 0 && (
 										<Table>
 											<TableHead columns={montarCabecalho('Referência', 1)} />
 											{HORIZONTAL_COLUMNS_QUALIFICACAO.map(cabecalhoColumn => {
 												if (
-													indicadoresForaRefMercadoRefCemig.find(
+													indicadoresForaRefMercadoRef.find(
 														i => i.campo == cabecalhoColumn.codigo
 													)
 												) {

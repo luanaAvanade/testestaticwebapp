@@ -11,11 +11,11 @@ function UserInfo() {
 				<Fragment>
 					<PersonIcon />
 					<Box display='flex' flexDirection='column'>
-						<UserName title={usuario.nome} variant='h6'>
-							{usuario.nome}
+						<UserName title={usuario.usuario.nome} variant='h6'>
+							{usuario.usuario.nome}
 						</UserName>
-						<Profile title={usuario.email} variant='caption'>
-							{usuario.email}
+						<Profile title={usuario.usuario.email} variant='caption'>
+							{usuario.usuario.email}
 						</Profile>
 					</Box>
 				</Fragment>
