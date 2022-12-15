@@ -52,37 +52,37 @@ function SideBar() {
 			text: translate('cadastroComplementar'),
 			linkTo: paths.getPathByCodigo('cadastro-complementar')
 		};
-		const tipoContato = {
-			codigo: 'tipo-contato',
-			text: translate('tipoContato'),
-			linkTo: paths.getPathByCodigo('tipo-contato')
-		};
-		const tipoDocumento = {
-			codigo: 'tipo-documento',
-			text: translate('tipoDocumento'),
-			linkTo: paths.getPathByCodigo('tipo-documento')
-		};
-		const termosAceite = {
-			codigo: 'termos-aceite',
-			text: translate('termosAceite'),
-			linkTo: paths.getPathByCodigo('termos-aceite'),
-			linkTo: paths.getPathByCodigo('termos-aceite')
-		};
-		const grupoPerguntaQualificacao = {
-			codigo: 'grupo-pergunta-qualificacao',
-			text: translate('grupoPerguntaQualificacao'),
-			linkTo: paths.getPathByCodigo('grupo-pergunta-qualificacao')
-		};
-		const perguntaQualificacao = {
-			codigo: 'pergunta-qualificacao',
-			text: translate('perguntaQualificacao'),
-			linkTo: paths.getPathByCodigo('pergunta-qualificacao')
-		};
-		const tipoExigencia = {
-			codigo: 'tipo-exigencia',
-			text: translate('tipoExigencia'),
-			linkTo: paths.getPathByCodigo('tipo-exigencia')
-		};
+		// const tipoContato = {
+		// 	codigo: 'tipo-contato',
+		// 	text: translate('tipoContato'),
+		// 	linkTo: paths.getPathByCodigo('tipo-contato')
+		// };
+		// const tipoDocumento = {
+		// 	codigo: 'tipo-documento',
+		// 	text: translate('tipoDocumento'),
+		// 	linkTo: paths.getPathByCodigo('tipo-documento')
+		// };
+		// const termosAceite = {
+		// 	codigo: 'termos-aceite',
+		// 	text: translate('termosAceite'),
+		// 	linkTo: paths.getPathByCodigo('termos-aceite'),
+		// 	linkTo: paths.getPathByCodigo('termos-aceite')
+		// };
+		// const grupoPerguntaQualificacao = {
+		// 	codigo: 'grupo-pergunta-qualificacao',
+		// 	text: translate('grupoPerguntaQualificacao'),
+		// 	linkTo: paths.getPathByCodigo('grupo-pergunta-qualificacao')
+		// };
+		// const perguntaQualificacao = {
+		// 	codigo: 'pergunta-qualificacao',
+		// 	text: translate('perguntaQualificacao'),
+		// 	linkTo: paths.getPathByCodigo('pergunta-qualificacao')
+		// };
+		// const tipoExigencia = {
+		// 	codigo: 'tipo-exigencia',
+		// 	text: translate('tipoExigencia'),
+		// 	linkTo: paths.getPathByCodigo('tipo-exigencia')
+		// };
 		const analistaCadastro = {
 			codigo: 'analise-cadastro',
 			text: 'Analise de Cadastros',
@@ -91,82 +91,82 @@ function SideBar() {
 
 		// MEC
 		let subModulosMec = [];
-		const mec = {
-			codigo: 'mec',
-			text: translate('matrizEstrategicaCategorias'),
-			open: true,
-			subModulos: subModulosMec
-		};
+		// const mec = {
+		// 	codigo: 'mec',
+		// 	text: translate('matrizEstrategicaCategorias'),
+		// 	open: true,
+		// 	subModulos: subModulosMec
+		// };
 
 		// SUBMODULO MEC
-		const acompanhamento = {
-			codigo: 'acompanhamento',
-			text: translate('acompanhamento'),
-			linkTo: paths.getPathByCodigo('acompanhamento')
-		};
-		const versoes = {
-			codigo: 'versoes',
-			text: translate('versoes'),
-			linkTo: paths.getPathByCodigo('versoes')
-		};
-		const importacao = {
-			codigo: 'importacao',
-			text: translate('importacaoDeArquivos'),
-			linkTo: paths.getPathByCodigo('importacao')
-		};
-		const grupoRespondente = {
-			codigo: 'grupo-respondente',
-			text: translate('grupoRespondente'),
-			linkTo: paths.getPathByCodigo('grupo-respondente')
-		};
-		const pergunta = {
-			codigo: 'pergunta',
-			text: translate('perguntas'),
-			linkTo: paths.getPathByCodigo('pergunta')
-		};
-		const resposta = {
-			codigo: 'resposta',
-			text: translate('resposta'),
-			linkTo: paths.getPathByCodigo('resposta')
-		};
+		// const acompanhamento = {
+		// 	codigo: 'acompanhamento',
+		// 	text: translate('acompanhamento'),
+		// 	linkTo: paths.getPathByCodigo('acompanhamento')
+		// };
+		// const versoes = {
+		// 	codigo: 'versoes',
+		// 	text: translate('versoes'),
+		// 	linkTo: paths.getPathByCodigo('versoes')
+		// };
+		// const importacao = {
+		// 	codigo: 'importacao',
+		// 	text: translate('importacaoDeArquivos'),
+		// 	linkTo: paths.getPathByCodigo('importacao')
+		// };
+		// const grupoRespondente = {
+		// 	codigo: 'grupo-respondente',
+		// 	text: translate('grupoRespondente'),
+		// 	linkTo: paths.getPathByCodigo('grupo-respondente')
+		// };
+		// const pergunta = {
+		// 	codigo: 'pergunta',
+		// 	text: translate('perguntas'),
+		// 	linkTo: paths.getPathByCodigo('pergunta')
+		// };
+		// const resposta = {
+		// 	codigo: 'resposta',
+		// 	text: translate('resposta'),
+		// 	linkTo: paths.getPathByCodigo('resposta')
+		// };
 		const resultado = {
 			codigo: 'resultado',
 			text: translate('resultados'),
 			linkTo: paths.getPathByCodigo('resultado')
 		};
-		const matriz = {
-			codigo: 'matriz',
-			text: translate('matriz'),
-			linkTo: paths.getPathByCodigo('matriz')
-		};
+		// const matriz = {
+		// 	codigo: 'matriz',
+		// 	text: translate('matriz'),
+		// 	linkTo: paths.getPathByCodigo('matriz')
+		// };
 
 		// VALIDACOES PARA ADICIONAR OS SUBMODULOS
 
 		// SUBMODULO MEC
 		//if (modulesMap.has('MEC_ACOMPANHAMENTO')) {
-			subModulosMec.push(acompanhamento);
+		//	subModulosMec.push(acompanhamento);
 		//}
 		//if (modulesMap.has('MEC_GRAFICO')) {
-			subModulosMec.push(matriz);
+		//	subModulosMec.push(matriz);
 		//}
-		//if (modulesMap.has('MEC_GRUPO_USUARIO')) {
-			subModulosMec.push(grupoRespondente);
-		//}
-		//if (modulesMap.has('MEC_IMPORTACAO')) {
-			subModulosMec.push(importacao);
-		//}
-		//if (modulesMap.has('MEC_PERGUNTAS')) {
-			subModulosMec.push(pergunta);
-		//}
-		//if (modulesMap.has('MEC_RESPOSTA')) {
-			subModulosMec.push(resposta);
-		//}
+		// //if (modulesMap.has('MEC_GRUPO_USUARIO')) {
+		// 	subModulosMec.push(grupoRespondente);
+		// //}
+		// //if (modulesMap.has('MEC_IMPORTACAO')) {
+		// 	subModulosMec.push(importacao);
+		// //}
+		// //if (modulesMap.has('MEC_PERGUNTAS')) {
+		// 	subModulosMec.push(pergunta);
+		// //}
+		// //if (modulesMap.has('MEC_RESPOSTA')) {
+		// 	subModulosMec.push(resposta);
+		// //}
 		//if (modulesMap.has('MEC_RESULTADO')) {
-			subModulosMec.push(resultado);
+		//	subModulosMec.push(resultado);
 		//}
-		//if (modulesMap.has('MEC_VERSAO')) {
-			subModulosMec.push(versoes);
-		//}
+		// //if (modulesMap.has('MEC_VERSAO')) {
+		// 	subModulosMec.push(versoes);
+		// //}
 
 		// SUBMODULO FORNECEDOR
 		//if (modulesMap.has('FORNECEDOR_ANALISE_CADASTRO')) {
@@ -176,23 +176,23 @@ function SideBar() {
 			subModulosFornecedor.push(cadastroComplementar);
 		//}
 		//if (modulesMap.has('FORNECEDOR_TIPO_CONTATO')) {
-			subModulosFornecedor.push(tipoContato);
-		//}
-		//if (modulesMap.has('FORNECEDOR_TIPO_DOCUMENTO')) {
-			subModulosFornecedor.push(tipoDocumento);
-		//}
-		//if (modulesMap.has('FORNECEDOR_TERMOS_ACEITE')) {
-			subModulosFornecedor.push(termosAceite);
-		//}
-		//if (modulesMap.has('FORNECEDOR_TIPO_GRUPO')) {
-			subModulosFornecedor.push(grupoPerguntaQualificacao);
-		//}
-		//if (modulesMap.has('FORNECEDOR_TIPO_GRUPO')) {
-			subModulosFornecedor.push(perguntaQualificacao);
-		//}
-		//if (modulesMap.has('FORNECEDOR_TIPO_EXIGENCIA')) {
-			subModulosFornecedor.push(tipoExigencia);
-		//}
+		// 	subModulosFornecedor.push(tipoContato);
+		// //}
+		// //if (modulesMap.has('FORNECEDOR_TIPO_DOCUMENTO')) {
+		// 	subModulosFornecedor.push(tipoDocumento);
+		// //}
+		// //if (modulesMap.has('FORNECEDOR_TERMOS_ACEITE')) {
+		// 	subModulosFornecedor.push(termosAceite);
+		// //}
+		// //if (modulesMap.has('FORNECEDOR_TIPO_GRUPO')) {
+		// 	subModulosFornecedor.push(grupoPerguntaQualificacao);
+		// //}
+		// //if (modulesMap.has('FORNECEDOR_TIPO_GRUPO')) {
+		// 	subModulosFornecedor.push(perguntaQualificacao);
+		// //}
+		// //if (modulesMap.has('FORNECEDOR_TIPO_EXIGENCIA')) {
+		// 	subModulosFornecedor.push(tipoExigencia);
+		// //}
 
 		// SUBMODULO AUTENTICADOR
 		if (modulesMap.has('AUTENTICADOR_ACESSO')) {
@@ -200,10 +200,10 @@ function SideBar() {
 
 		// Modulo Home sempre será adicionado
 		modulos.push(home);
-		// Caso exista submodulo o modulo é adicionado
-		if (subModulosMec.length > 0) {
-			modulos.push(mec);
-		}
+		// // Caso exista submodulo o modulo é adicionado
+		// if (subModulosMec.length > 0) {
+		// 	modulos.push(mec);
+		// }
 		if (subModulosFornecedor.length > 0) {
 			modulos.push(fornecedor);
 		}
