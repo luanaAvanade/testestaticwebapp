@@ -184,7 +184,7 @@ export default function ListagemAnalise() {
 
 
 
-		const response = await EmpresaService.findEmpresasWithWhereClause('Id!=null and Id > 149');
+		const response = await EmpresaService.findEmpresasWithWhereClause('Id!=null and Id > 151');
 		if (response.data) {
 			let t = response.data.Empresa_list.sort(sort);
 			setAnaliseCadastroList(t);
