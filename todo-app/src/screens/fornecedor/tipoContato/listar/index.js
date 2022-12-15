@@ -4,7 +4,7 @@ import { TableBody, Box, IconButton, TablePagination } from '@material-ui/core';
 import useReactRouter from 'use-react-router';
 import { Edit, Delete } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
-//import { Table, TableHead, TableRow, TableCell, Button, Confirm } from 'react-axxiom';
+import { Table, TableHead, TableRow, TableCell, Button, Confirm } from 'react-axxiom';
 import { LayoutContent } from '@/layout';
 import { Creators as LoaderCreators } from '@/store/ducks/loader';
 import { translate } from '@/locales';
@@ -12,6 +12,7 @@ import { stableSort, getSorting } from '@/utils/list';
 import paths from '@/utils/paths';
 import { snackSuccess, snackError, snackWarning } from '@/utils/snack';
 import theme from '@/theme';
+import TipoContatoService from '@/services/tipoContato';
 import { SUBDIRETORIO_LINK, ROWSPERPAGE } from '@/utils/constants';
 import { Status } from '../../style';
 
@@ -65,7 +66,7 @@ export default function ListagemTipoContato({ getPermissao }) {
 
 	const tipoContatoFindAll = async () => {
 		dispatch(LoaderCreators.setLoading());
-		const response = null;
+		const response = await TipoContatoService.findAll();
 		if (response.data) {
 			setTipoContatoList(response.data.TipoContato_list);
 			dispatch(LoaderCreators.disableLoading());
@@ -87,6 +88,15 @@ export default function ListagemTipoContato({ getPermissao }) {
 	const excluir = () => {
 		setIdTipoContatoExcluir(null);
 		dispatch(LoaderCreators.setLoading());
+		TipoContatoService.verificarChaveEstrangeira(idTipoContatoExcluir).then(response => {
+			if (response.data.Contato_list.length > 0) {
+				callbackWarning(translate('excluirComChaveEstrageira'));
+			} else {
+				TipoContatoService.remove(idTipoContatoExcluir)
+					.then(() => callback(translate('tipoContatoExcluidoSucesso')))
+					.catch(() => callbackError(translate('erroExcluirTipoContato')));
+			}
+		});
 	};
 
 	// Ações de Retorno
@@ -130,106 +140,105 @@ export default function ListagemTipoContato({ getPermissao }) {
 	let variantTableRow = theme.palette.table.tableRowPrimary;
 
 	return (
-		// <LayoutContent>
-		// 	<Box display='flex' justifyContent='flex-end'>
-		// 		{getPermissao() && (
-		// 			<Button text='adicionar' onClick={novo} margin={`0px 0px 0px @/..{theme.spacing(1)}px`} />
-		// 		)}
-		// 	</Box>
-		// 	<Confirm
-		// 		open={idTipoContatoExcluir !== null}
-		// 		handleClose={() => setIdTipoContatoExcluir(null)}
-		// 		handleSuccess={excluir}
-		// 		title={translate('confirmacao')}
-		// 		text={translate('desejaRealmenteExcluirTipoContato')}
-		// 		textButtonSuccess={translate('sim')}
-		// 		textButtonCancel={translate('nao')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	/>
+		<LayoutContent>
+			<Box display='flex' justifyContent='flex-end'>
+				{getPermissao() && (
+					<Button text='adicionar' onClick={novo} margin={`0px 0px 0px @/..{theme.spacing(1)}px`} />
+				)}
+			</Box>
+			<Confirm
+				open={idTipoContatoExcluir !== null}
+				handleClose={() => setIdTipoContatoExcluir(null)}
+				handleSuccess={excluir}
+				title={translate('confirmacao')}
+				text={translate('desejaRealmenteExcluirTipoContato')}
+				textButtonSuccess={translate('sim')}
+				textButtonCancel={translate('nao')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			/>
 
-		// 	<Table small>
-		// 		<TableHead
-		// 			columns={columns}
-		// 			order={order}
-		// 			orderBy={orderBy}
-		// 			onRequestSort={(event, property) => handleRequestSort(property)}
-		// 			rowCount={columns.length}
-		// 		/>
-		// 		<TableBody>
-		// 			{stableSort(tipoContatoList, getSorting(order, orderBy))
-		// 				.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-		// 				.map((tipoContato, index) => {
-		// 					variantTableRow =
-		// 						variantTableRow === theme.palette.table.tableRowPrimary
-		// 							? theme.palette.table.tableRowSecondary
-		// 							: theme.palette.table.tableRowPrimary;
-		// 					return (
-		// 						<TableRow key={index} backgroundColor={variantTableRow}>
-		// 							<TableCell label={tipoContato.Nome} />
-		// 							<TableCell label={tipoContato.Descricao} />
-		// 							<Status
-		// 								label={tipoContato.Status ? 'Ativo' : 'Inativo'}
-		// 								ativo={tipoContato.Status}
-		// 								backgroundColor={tipoContato.Status ? '#1e90ff' : '#808080'}
-		// 							/>
-		// 							<TableCell
-		// 								title={translate('editar')}
-		// 								label={
-		// 									<IconButton
-		// 										disabled={!getPermissao()}
-		// 										size='small'
-		// 										onClick={() => editar(tipoContato.value)}
-		// 									>
-		// 										<Edit />
-		// 									</IconButton>
-		// 								}
-		// 							/>
+			<Table small>
+				<TableHead
+					columns={columns}
+					order={order}
+					orderBy={orderBy}
+					onRequestSort={(event, property) => handleRequestSort(property)}
+					rowCount={columns.length}
+				/>
+				<TableBody>
+					{stableSort(tipoContatoList, getSorting(order, orderBy))
+						.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+						.map((tipoContato, index) => {
+							variantTableRow =
+								variantTableRow === theme.palette.table.tableRowPrimary
+									? theme.palette.table.tableRowSecondary
+									: theme.palette.table.tableRowPrimary;
+							return (
+								<TableRow key={index} backgroundColor={variantTableRow}>
+									<TableCell label={tipoContato.Nome} />
+									<TableCell label={tipoContato.Descricao} />
+									<Status
+										label={tipoContato.Status ? 'Ativo' : 'Inativo'}
+										ativo={tipoContato.Status}
+										backgroundColor={tipoContato.Status ? '#1e90ff' : '#808080'}
+									/>
+									<TableCell
+										title={translate('editar')}
+										label={
+											<IconButton
+												disabled={!getPermissao()}
+												size='small'
+												onClick={() => editar(tipoContato.value)}
+											>
+												<Edit />
+											</IconButton>
+										}
+									/>
 
-		// 							<TableCell
-		// 								title={translate('excluir')}
-		// 								label={
-		// 									<IconButton
-		// 										size='small'
-		// 										disabled={!getPermissao()}
-		// 										onClick={() => setIdTipoContatoExcluir(tipoContato.value)}
-		// 									>
-		// 										<Delete />
-		// 									</IconButton>
-		// 								}
-		// 							/>
-		// 						</TableRow>
-		// 					);
-		// 				})}
-		// 			{tipoContatoList.length === 0 && (
-		// 				<TableRow backgroundColor={variantTableRow}>
-		// 					<TableCell align='center' colSpan={5} label={translate('semResultadosAExibir')} />
-		// 				</TableRow>
-		// 			)}
-		// 		</TableBody>
-		// 	</Table>
-		// 	{tipoContatoList.length > rowsPerPage && (
-		// 		<TablePagination
-		// 			rowsPerPageOptions={ROWSPERPAGE}
-		// 			labelRowsPerPage={translate('linhasPorPagina')}
-		// 			component='div'
-		// 			count={tipoContatoList.length}
-		// 			rowsPerPage={rowsPerPage}
-		// 			page={page}
-		// 			backIconButtonProps={{
-		// 				'aria-label': 'Previous Page'
-		// 			}}
-		// 			nextIconButtonProps={{
-		// 				'aria-label': 'Next Page'
-		// 			}}
-		// 			onChangePage={(event, newPage) => setPage(newPage)}
-		// 			onChangeRowsPerPage={event => {
-		// 				setPage(0);
-		// 				setRowsPerPage(event.target.value);
-		// 			}}
-		// 			style={{ paddingRight: '80px' }}
-		// 		/>
-		// 	)}
-		// </LayoutContent>
-		<div></div>
+									<TableCell
+										title={translate('excluir')}
+										label={
+											<IconButton
+												size='small'
+												disabled={!getPermissao()}
+												onClick={() => setIdTipoContatoExcluir(tipoContato.value)}
+											>
+												<Delete />
+											</IconButton>
+										}
+									/>
+								</TableRow>
+							);
+						})}
+					{tipoContatoList.length === 0 && (
+						<TableRow backgroundColor={variantTableRow}>
+							<TableCell align='center' colSpan={5} label={translate('semResultadosAExibir')} />
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+			{tipoContatoList.length > rowsPerPage && (
+				<TablePagination
+					rowsPerPageOptions={ROWSPERPAGE}
+					labelRowsPerPage={translate('linhasPorPagina')}
+					component='div'
+					count={tipoContatoList.length}
+					rowsPerPage={rowsPerPage}
+					page={page}
+					backIconButtonProps={{
+						'aria-label': 'Previous Page'
+					}}
+					nextIconButtonProps={{
+						'aria-label': 'Next Page'
+					}}
+					onChangePage={(event, newPage) => setPage(newPage)}
+					onChangeRowsPerPage={event => {
+						setPage(0);
+						setRowsPerPage(event.target.value);
+					}}
+					style={{ paddingRight: '80px' }}
+				/>
+			)}
+		</LayoutContent>
 	);
 }

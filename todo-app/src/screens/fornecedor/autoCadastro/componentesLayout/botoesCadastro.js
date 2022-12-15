@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Box } from '@material-ui/core';
-//import { Button } from 'react-axxiom';
+import { Button } from 'react-axxiom';
 import theme from '@/theme';
 import { translate } from '@/locales';
 import { COMANDO_CADASTRO_FORNECEDOR } from '@/utils/constants';
@@ -14,8 +14,8 @@ export function BotoesCadastro({
 	statusEmpresa
 }) {
 	return (
-		<Box display='flex' justifyContent='flex-end' paddingTop={`@/..{theme.spacing(1)}px`}>
-			{/* {!disableEdit && (
+		<Box display='flex' justifyContent='flex-end' paddingTop={`${theme.spacing(1)}px`}>
+			{!disableEdit && (
 				<Fragment>
 					<Button
 						text={translate('cancelar')}
@@ -48,7 +48,7 @@ export function BotoesCadastro({
 						/>
 					)}
 				</Fragment>
-			)} */}
+			)}
 		</Box>
 	);
 }

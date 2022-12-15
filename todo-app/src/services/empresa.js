@@ -6,10 +6,161 @@ export default {
 		return http.request('/gql', {
 			query: `mutation($empresa: EmpresaCreateInput!) {
 				Empresa_insert (input: $empresa)
-					{
+				{
+					Id
+					NomeEmpresa
+					CNPJ
+					InscricaoEstadual
+					IsentoIE
+					InscricaoMunicipal
+					OptanteSimplesNacional
+					DataAbertura
+					AtividadeEconomicaPrincipalId
+					OcupacaoPrincipalId
+					TipoEmpresa
+					TipoCadastro
+					CapitalSocialTotalSociedade
+					DataRegistroSociedade
+					ContatoSolicitante {
+						NomeContato
+						Email
+					} 
+					ContatosAdicionais {
 						Id
+						NomeContato
+						Telefone
+						Email
+						TipoContatoId
+					}
+					Usuarios { 
+						Id
+						Nome
+						CPF
+						Telefone
+						Celular
+						Email
+						CargoEmpresa
+					}
+					Enderecos { 
+						Id
+						CEP
+						TipoEndereco,
+						Logradouro,
+						Numero,
+						Complemento,
+						Bairro,
+						Municipio{
+							Id
+							CodIBGE
+							EstadoId
+						}
+					}
+					DadosPessoaFisica {
+						Id
+						DataNascimento
+						CPF
+						PisPasepNit
+						Sexo
+						Municipio{
+							Id
+							CodIBGE
+							EstadoId
+						}
+					}
+					GruposFornecimento {
+						GrupoCategoria{
+							Id
+							Codigo
+							Nome
+							Categoria{
+									Codigo
+									Descricao
+									Tipo
+							}
+						}
+						TipoFornecimento
+					}
+					DadosBancarios{
+						Id,
+						Banco{
+							Id
+						}
+						Agencia
+						DigitoAgencia
+						Conta
+						DigitoConta
+					}
+					DadosBalancosPatrimoniais {
+						Id
+						DataReferencia 
+						AtivoTotal 
+						CirculanteAtivo  
+						Disponibilidades 
+						Estoques 
+						OutrosAtivosCirculante 
+						AtivoNaoCirculante 
+						PassivoTotal 
+						CirculantePassivo 
+						EmprestimosFinanciamentoCirculante 
+						OutrosPassivosCirculantes 
+						NaoCirculantePassivo 
+						EmprestimosFinanciamentoNaoCirculante 
+						OutrosPassivosNaoCirculantes 
+						PatrimonioLiquido
+					}
+					DadosDREs {
+						Id
+						DataReferencia 
+						ReceitaOperacionalLiquida
+						CustoProdutosVendidosMercadoriasVendidasServicosPrestados
+						ResultadoOperacionalBruto
+						DespesasVendasAdministrativasGeraisOutras
+						DespesasFinanceiras
+						ReceitasFinanceiras
+						ResultadoOperacionalAntesIrCssl
+						ResultadoLiquidoPeriodo
+					}
+					Socios{
+						Id
+						TipoPessoa
+						ValorParticipacao
+						Codigo
+						Nome
+						Administrador
+					}
+					GruposDeAssinatura{
+						Id
+						ValorLimite
+						TipoAssinatura
+						Assinaturas{
+							Id
+							SocioId
+							Obrigatoriedade
+						}
+					}
+					TermoAceiteEmpresa
+		  {
+				Aceite
+				EmpresaId
+				Id
+				TermosAceiteId
+		   }
+					AnaliseCadastro{
+						Id
+						StatusAnalise
+						AtribuidoId
+						TransmitidoId
+						ItensAnalise{
+							Id
+							TipoItem
+							AutorId
+							Status
+							ArquivoId
+							Justificativa
+						}
 					}
 				}
+			}
 			`,
 			variables: { empresa }
 		});
@@ -17,8 +168,8 @@ export default {
 
 	update(id, empresa) {
 		return http.request('/gql', {
-			query: `mutation(..id:ID! ..empresa: EmpresaUpdateInput!) {
-				Empresa_update (id:..id input:..empresa)
+			query: `mutation($id:ID! $empresa: EmpresaUpdateInput!) {
+				Empresa_update (id:$id input:$empresa)
 					{
 						Id
 						NomeEmpresa
@@ -148,7 +299,7 @@ export default {
 			variables: { id, empresa }
 		});
 	},
-
+	
 	findByCnpj(cnpj) {
 		return http.request('/gql', {
 			query: `query{
@@ -168,10 +319,12 @@ export default {
 		});
 	},
 
+
+
 	findById(Id) {
 		return http.request('/gql', {
 			query: `query{
-				Empresa_list(where:"Id=\\"..{Id}\\""){
+				Empresa_list(where:"Id=\\"${Id}\\""){
 					Id
 					NomeEmpresa
 					CNPJ
@@ -187,42 +340,6 @@ export default {
 					CapitalSocialTotalSociedade
 					DataRegistroSociedade
 					Situacao
-					TermoAceiteEmpresa{
-						Id
-						Aceite 
-						EmpresaId 
-						TermosAceiteId
-						TermosAceite
-					
-						{
-							Titulo
-							SubTitulo
-							Status
-							Descricao
-						}
-					}
-					
-					ContatoSolicitante {
-						Id
-						NomeContato
-						Email
-					} 
-					ContatosAdicionais {
-						Id
-						NomeContato
-						Telefone
-						Email
-						TipoContatoId
-					}
-					Usuarios { 
-						Id
-						Nome
-						CPF
-						Telefone
-						Celular
-						Email
-						CargoEmpresa
-					}
 					Enderecos { 
 						Id
 						CEP
@@ -236,6 +353,15 @@ export default {
 							CodIBGE
 							EstadoId
 						}
+					}
+					Usuarios { 
+						Id
+						Nome
+						CPF
+						Telefone
+						Celular
+						Email
+						CargoEmpresa
 					}
 					DadosPessoaFisica {
 						Id
@@ -259,7 +385,7 @@ export default {
 									Descricao
 									Tipo
 							}
-							GruposFornecimento(where:"EmpresaId != \\"..{Id}\\""){
+							GruposFornecimento(where:"EmpresaId != \\"${Id}\\""){
 								Empresa{
 									Id,
 									NomeEmpresa
@@ -326,22 +452,6 @@ export default {
 							Obrigatoriedade
 						}
 					}
-					Documentos {
-						DataBasePeriodo
-						TipoDocumento{
-								Id
-								Nome
-								TipoDocumentoFuncionalidade{
-                   Funcionalidade
-									 Obrigatorio
-									}
-						}
-						Arquivo {
-								Id
-							  NomeArquivo
-								CodigoExterno
-						}
-					}
 					AnaliseCadastro{
 						Id
 						StatusAnalise
@@ -355,16 +465,6 @@ export default {
 							ArquivoId
 							Justificativa
 						}
-					}
-					Comentarios{
-						Id
-						Local
-						Coment
-						DataCriacao
-						Usuario{
-							Id
-							Nome
-						}	
 					}
 					CalculoRiscoLista{
 							Data
@@ -402,10 +502,101 @@ export default {
 		});
 	},
 
+
+
+	findByIdAproveReprove(Id) {
+		return http.request('/gql', {
+			query: `query{
+				Empresa_list(where:"Id=\\"${Id}\\""){
+					Id
+					NomeEmpresa
+					CNPJ
+					InscricaoEstadual
+					IsentoIE
+					InscricaoMunicipal
+					OptanteSimplesNacional
+					DataAbertura
+					TipoEmpresa
+					TipoCadastro
+					CapitalSocialTotalSociedade
+					DataRegistroSociedade
+					AnaliseCadastro{
+						Id
+						StatusAnalise
+						AtribuidoId
+						TransmitidoId
+						ItensAnalise{
+							Id
+							TipoItem
+							AutorId
+							Status
+							ArquivoId
+							Justificativa
+						}
+					}
+				}
+			}`
+		});
+	},
+
+
+
+	findByIdEmpresaAprovacao(Id) {
+		return http.request('/gql', {
+			query: `query{
+				Empresa_list(where:"Id=\\"${Id}\\""){
+					Id
+					NomeEmpresa
+					CNPJ
+					InscricaoEstadual
+					IsentoIE
+					InscricaoMunicipal
+					OptanteSimplesNacional
+					DataAbertura
+					TipoEmpresa
+					TipoCadastro
+					CapitalSocialTotalSociedade
+					DataRegistroSociedade
+					Situacao
+					DadosBalancosPatrimoniais {
+						Id
+						DataReferencia 
+						AtivoTotal 
+						CirculanteAtivo  
+						Disponibilidades 
+						Estoques 
+						OutrosAtivosCirculante 
+						AtivoNaoCirculante 
+						PassivoTotal 
+						CirculantePassivo 
+						EmprestimosFinanciamentoCirculante 
+						OutrosPassivosCirculantes 
+						NaoCirculantePassivo 
+						EmprestimosFinanciamentoNaoCirculante 
+						OutrosPassivosNaoCirculantes 
+						PatrimonioLiquido
+					}
+					DadosDREs {
+						Id
+						DataReferencia 
+						ReceitaOperacionalLiquida
+						CustoProdutosVendidosMercadoriasVendidasServicosPrestados
+						ResultadoOperacionalBruto
+						DespesasVendasAdministrativasGeraisOutras
+						DespesasFinanceiras
+						ReceitasFinanceiras
+						ResultadoOperacionalAntesIrCssl
+						ResultadoLiquidoPeriodo
+					}
+				}
+			}`
+		});
+	},
+
 	findCalculoRiscoByGrupoCategoriaId(GrupoCategoriaId) {
 		return http.request('/gql', {
 			query: `query {
-				Empresa_list(where:"GruposFornecimento.Any(GrupoCategoriaId=..{GrupoCategoriaId})"){
+				Empresa_list(where:"GruposFornecimento.Any(GrupoCategoriaId=${GrupoCategoriaId})"){
 					Id,
 					NomeEmpresa,
 					CalculoRiscoLista{
@@ -577,7 +768,7 @@ export default {
 	findEmpresasWithWhereClause(Where) {
 		return http.request('/gql', {
 			query: `query{
-				Empresa_list(where:"..{Where}" orderBy:"DataCriacao desc"){
+				Empresa_list(where:"${Where}" orderBy:"DataCriacao desc"){
 					Id
 					NomeEmpresa
 					CNPJ

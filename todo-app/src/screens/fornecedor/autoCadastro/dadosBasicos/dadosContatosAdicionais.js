@@ -1,16 +1,16 @@
 import React, { useState, useEffect, Fragment } from 'react';
-// import {
-// 	Modal,
-// 	FormSelect,
-// 	FormInput,
-// 	Table,
-// 	TableHead,
-// 	TableRow,
-// 	TableCell,
-// 	Button,
-// 	Card,
-// 	Confirm
-// } from 'react-axxiom';
+import {
+	Modal,
+	FormSelect,
+	FormInput,
+	Table,
+	TableHead,
+	TableRow,
+	TableCell,
+	Button,
+	Card,
+	Confirm
+} from '@/components';
 import { Edit, Delete } from '@material-ui/icons';
 import _ from 'lodash';
 import { CardHeader, Box, TableBody, IconButton, CardContent } from '@material-ui/core';
@@ -224,7 +224,7 @@ export default function DadosContatosAdicionais({
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Confirm
+			<Confirm
 				open={indexContatoExcluir !== null}
 				handleSuccess={deleteContato}
 				handleClose={() => setIndexContatoExcluir(null)}
@@ -387,7 +387,7 @@ export default function DadosContatosAdicionais({
 						</TableBody>
 					</Table>
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }

@@ -5,8 +5,8 @@ import { Box, Text, Image } from './style';
 function Footer() {
 	return (
 		<Box justifyContent='flex-end' display='flex'>
-			<Text>Powered by</Text>
-			<Image src={Axxiom} />
+			<Text>Powered by Luana Rodrigues</Text>
+			
 		</Box>
 	);
 }

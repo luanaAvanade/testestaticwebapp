@@ -19,22 +19,24 @@ import {
 import { Add, Edit, Delete } from '@material-ui/icons';
 import useReactRouter from 'use-react-router';
 import _ from 'lodash';
-// import {
-// 	Button,
-// 	Confirm,
-// 	FormInput,
-// 	FormSelect,
-// 	Modal,
-// 	Table,
-// 	TableHead,
-// 	TableRow,
-// 	TableCell
-// } from 'react-axxiom';
+import {
+	Button,
+	Confirm,
+	FormInput,
+	FormSelect,
+	Modal,
+	Table,
+	TableHead,
+	TableRow,
+	TableCell
+} from 'react-axxiom';
 import { LayoutContent } from '@/layout';
 import { translate, translateWithHtml } from '@/locales';
 import { Creators as LoaderCreators } from '@/store/ducks/loader';
 import { snackSuccess, snackError, snackWarning } from '@/utils/snack';
 import theme from '@/theme';
+import TipoDocumentoService from '@/services/tipoDocumento';
+import TipoDocumentoFuncionalidadeService from '@/services/tipoDocumentoFuncionalidade';
 import { checkError } from '@/utils/validation';
 import ObjectHelper from '@/utils/objectHelper';
 import { BoxContentTab } from './style';
@@ -158,7 +160,7 @@ export default function CadastrarTipoDocumento() {
 
 	const tipoDocumentoFindById = async () => {
 		dispatch(LoaderCreators.setLoading());
-		const response = null;
+		const response = await TipoDocumentoService.findById(id);
 		if (response.data) {
 			const r = response.data.TipoDocumento_list[0];
 			setFieldValue('nome', r.Nome, false);
@@ -291,7 +293,7 @@ export default function CadastrarTipoDocumento() {
 	};
 
 	const create = async () => {
-		const list = null;
+		const list = await TipoDocumentoService.findByNome(nome.value);
 
 		if (list.data && list.data.TipoDocumento_list && list.data.TipoDocumento_list.length === 0) {
 			const tiposArq = enumFunc(selectTiposArquivos, tiposArquivosPermitidosList);
@@ -299,7 +301,29 @@ export default function CadastrarTipoDocumento() {
 				callbackWarning(translate('associacaoFuncionalidadeObrigatoria'), null);
 				return;
 			}
+			TipoDocumentoService.create({
+				Nome: nome.value,
+				Help: helpDoc.value,
+				Obrigatorio: obrigatorio.value,
+				QuantidadeMaxima: qtdMaxima.value === '' ? null : qtdMaxima.value,
+				TamanhoMaximo: tamanhoMaximo.value === '' ? null : tamanhoMaximo.value,
+				ValidadeMeses: validadeMeses.value === '' ? null : validadeMeses.value,
+				TiposArquivos: tiposArq,
+				Status: status,
+				TipoDocumentoFuncionalidade: funcionalidadesTipoDoc.map(item => {
+					item.ValidadeMeses = item.ValidadeMeses === '' ? null : item.ValidadeMeses;
+					return item;
+				})
+			})
+				.then(response => {
+					if (response.data.TipoDocumento_insert.Id !== undefined) {
+						callback(translate('sucessoInclusaoRegistro'));
 					} else {
+						callbackError(translate('erroInclusaoRegistro'), response);
+					}
+				})
+				.catch(response => callbackError(translate('erroInclusaoRegistro'), response));
+		} else {
 			enqueueSnackbar(
 				'',
 				snackWarning(translateWithHtml('jaExisteUmTipoDocumentoComEsteNome'), closeSnackbar)
@@ -308,7 +332,7 @@ export default function CadastrarTipoDocumento() {
 	};
 
 	const update = async () => {
-		const list = null;
+		const list = await TipoDocumentoService.findByNome(nome.value);
 
 		if (
 			list.data &&
@@ -321,7 +345,35 @@ export default function CadastrarTipoDocumento() {
 				return;
 			}
 			const tiposArq = enumFunc(selectTiposArquivos, tiposArquivosPermitidosList);
-			
+			TipoDocumentoFuncionalidadeService.removeMany(funcionalidadeIdsListInitial)
+				.then(() => {
+					funcionalidadesTipoDoc.map(x => delete x.Id);
+					TipoDocumentoService.update(id, {
+						Nome: nome.value,
+						Help: helpDoc.value,
+						Obrigatorio: obrigatorio.value,
+						Status: status,
+						QuantidadeMaxima: qtdMaxima.value === '' ? null : qtdMaxima.value,
+						TamanhoMaximo: tamanhoMaximo.value === '' ? null : tamanhoMaximo.value,
+						ValidadeMeses: validadeMeses.value === '' ? null : validadeMeses.value,
+						TiposArquivos: tiposArq,
+						TipoDocumentoFuncionalidade: funcionalidadesTipoDoc.map(item => {
+							item.ValidadeMeses = item.ValidadeMeses === '' ? null : item.ValidadeMeses;
+							return item;
+						})
+					})
+						.then(responseAdd => {
+							if (responseAdd.data.TipoDocumento_update.Id) {
+								callback(translate('sucessoAlteracaoRegistro'));
+							} else {
+								callbackError(translate('erroAlteracaoRegistro'), responseAdd);
+							}
+						})
+						.catch(responseAdd => callbackError(translate('erroAlteracaoRegistro'), responseAdd));
+				})
+				.catch(responseRemove => {
+					callbackError(translate('erroAlteracaoRegistro'), responseRemove);
+				});
 		} else {
 			setOpenConfirmAlterar(false);
 			enqueueSnackbar(
@@ -369,7 +421,7 @@ export default function CadastrarTipoDocumento() {
 	};
 
 	const setEstados = async () => {
-		const response = null;
+		const response = await TipoDocumentoService.listEstados();
 		if (response.data) {
 			setEstadoList(response.data.Estado_list);
 		} else {
@@ -757,463 +809,462 @@ export default function CadastrarTipoDocumento() {
 	let variantTableRow = theme.palette.table.tableRowSecondary;
 
 	return (
-		// <LayoutContent>
-		// 	<Confirm
-		// 		open={openConfirmAlterar}
-		// 		handleClose={() => setOpenConfirmAlterar(false)}
-		// 		handleSuccess={update}
-		// 		title={translate('confirmacao')}
-		// 		text={translate('desejaRealmenteAlterarTipoDocumento')}
-		// 		textButtonSuccess={translate('sim')}
-		// 		textButtonCancel={translate('nao')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	/>
-		// 	<Confirm
-		// 		open={openConfirmCancelar}
-		// 		handleClose={() => setOpenConfirmBotaoCancelar(false)}
-		// 		handleSuccess={voltar}
-		// 		title={translate('confirmacao')}
-		// 		text={translate('desejaRealmenteCancelar')}
-		// 		textButtonSuccess={translate('sim')}
-		// 		textButtonCancel={translate('nao')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	/>
-		// 	<Form onSubmit={handleSubmit}>
-		// 		<Tabs
-		// 			value={tab}
-		// 			onChange={(event, newValue) => alterTab(newValue)}
-		// 			indicatorColor='primary'
-		// 			textcolor='primary'
-		// 		>
-		// 			<Tab label={translate('cadastro')} />
-		// 			<Tab label={translate('visaoGeral')} />
-		// 		</Tabs>
-		// 		{tab === 0 && (
-		// 			<BoxContentTab>
-		// 				<Box display='flex' flexDirection='row'>
-		// 					<Box width='50%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 						<FormInput
-		// 							label={`@/..{translate('nome')}:`}
-		// 							name={nome}
-		// 							required
-		// 							error={checkError(submitCount, metadataNome)}
-		// 						/>
-		// 					</Box>
-		// 					<Box width='50%'>
-		// 						<FormInput
-		// 							label={`@/..{translate('helpDoc')}:`}
-		// 							name={helpDoc}
-		// 							required
-		// 							error={checkError(submitCount, metadataHelpDoc)}
-		// 							margin={`0px 0px 0px @/..{theme.spacing(1)}px`}
-		// 						/>
-		// 					</Box>
-		// 				</Box>
+		<LayoutContent>
+			<Confirm
+				open={openConfirmAlterar}
+				handleClose={() => setOpenConfirmAlterar(false)}
+				handleSuccess={update}
+				title={translate('confirmacao')}
+				text={translate('desejaRealmenteAlterarTipoDocumento')}
+				textButtonSuccess={translate('sim')}
+				textButtonCancel={translate('nao')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			/>
+			<Confirm
+				open={openConfirmCancelar}
+				handleClose={() => setOpenConfirmBotaoCancelar(false)}
+				handleSuccess={voltar}
+				title={translate('confirmacao')}
+				text={translate('desejaRealmenteCancelar')}
+				textButtonSuccess={translate('sim')}
+				textButtonCancel={translate('nao')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			/>
+			<Form onSubmit={handleSubmit}>
+				<Tabs
+					value={tab}
+					onChange={(event, newValue) => alterTab(newValue)}
+					indicatorColor='primary'
+					textcolor='primary'
+				>
+					<Tab label={translate('cadastro')} />
+					<Tab label={translate('visaoGeral')} />
+				</Tabs>
+				{tab === 0 && (
+					<BoxContentTab>
+						<Box display='flex' flexDirection='row'>
+							<Box width='50%' paddingRight={`@/..{theme.spacing(1)}px`}>
+								<FormInput
+									label={`@/..{translate('nome')}:`}
+									name={nome}
+									required
+									error={checkError(submitCount, metadataNome)}
+								/>
+							</Box>
+							<Box width='50%'>
+								<FormInput
+									label={`@/..{translate('helpDoc')}:`}
+									name={helpDoc}
+									required
+									error={checkError(submitCount, metadataHelpDoc)}
+									margin={`0px 0px 0px @/..{theme.spacing(1)}px`}
+								/>
+							</Box>
+						</Box>
 
-		// 				<Box display='flex' flexDirection='row'>
-		// 					<Box width='25%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 						<Typography display='block' variant='h6'>
-		// 							{`@/..{translate('tiposArquivo')}`}
-		// 						</Typography>
-		// 						<Select
-		// 							style={{ width: '100%' }}
-		// 							multiple
-		// 							value={tiposArquivosPermitidosList}
-		// 							onChange={addTipoArq}
-		// 							input={<OutlinedInput id='select-multiple-checkbox' margin='dense' />}
-		// 							renderValue={selected => selected.join(', ')}
-		// 							MenuProps={MenuProps}
-		// 						>
-		// 							{selectTiposArquivos.map(item => item.label).map(item => (
-		// 								<MenuItem key={item} value={item}>
-		// 									<Checkbox checked={tiposArquivosPermitidosList.indexOf(item) > -1} />
-		// 									<ListItemText primary={item} />
-		// 								</MenuItem>
-		// 							))}
-		// 						</Select>
-		// 					</Box>
-		// 					<Box width='20%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 						<FormInput
-		// 							label={`@/..{translate('tamanhoMaximo')}:`}
-		// 							name={tamanhoMaximo}
-		// 							type='number'
-		// 							InputProps={{ inputProps: { min: 1 } }}
-		// 						/>
-		// 					</Box>
-		// 					<Box width='20%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 						<FormInput
-		// 							label={`@/..{translate('quantidadeMaxima')}:`}
-		// 							name={qtdMaxima}
-		// 							type='number'
-		// 							InputProps={{ inputProps: { min: 0 } }}
-		// 						/>
-		// 					</Box>
-		// 					<Box width='20%' display='flex' flexDirection='row'>
-		// 						<Box width='80%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 							<FormInput
-		// 								label={`@/..{translate('validadeMeses')}:`}
-		// 								name={validadeMeses}
-		// 								type='number'
-		// 								InputProps={{ inputProps: { min: 0 } }}
-		// 							/>
-		// 						</Box>
+						<Box display='flex' flexDirection='row'>
+							<Box width='25%' paddingRight={`@/..{theme.spacing(1)}px`}>
+								<Typography display='block' variant='h6'>
+									{`@/..{translate('tiposArquivo')}`}
+								</Typography>
+								<Select
+									style={{ width: '100%' }}
+									multiple
+									value={tiposArquivosPermitidosList}
+									onChange={addTipoArq}
+									input={<OutlinedInput id='select-multiple-checkbox' margin='dense' />}
+									renderValue={selected => selected.join(', ')}
+									MenuProps={MenuProps}
+								>
+									{selectTiposArquivos.map(item => item.label).map(item => (
+										<MenuItem key={item} value={item}>
+											<Checkbox checked={tiposArquivosPermitidosList.indexOf(item) > -1} />
+											<ListItemText primary={item} />
+										</MenuItem>
+									))}
+								</Select>
+							</Box>
+							<Box width='20%' paddingRight={`@/..{theme.spacing(1)}px`}>
+								<FormInput
+									label={`@/..{translate('tamanhoMaximo')}:`}
+									name={tamanhoMaximo}
+									type='number'
+									InputProps={{ inputProps: { min: 1 } }}
+								/>
+							</Box>
+							<Box width='20%' paddingRight={`@/..{theme.spacing(1)}px`}>
+								<FormInput
+									label={`@/..{translate('quantidadeMaxima')}:`}
+									name={qtdMaxima}
+									type='number'
+									InputProps={{ inputProps: { min: 0 } }}
+								/>
+							</Box>
+							<Box width='20%' display='flex' flexDirection='row'>
+								<Box width='80%' paddingRight={`@/..{theme.spacing(1)}px`}>
+									<FormInput
+										label={`@/..{translate('validadeMeses')}:`}
+										name={validadeMeses}
+										type='number'
+										InputProps={{ inputProps: { min: 0 } }}
+									/>
+								</Box>
 
-		// 						<Box
-		// 							width='20%'
-		// 							paddingRight={`@/..{theme.spacing(1)}px`}
-		// 							alignItems='center'
-		// 							display='flex'
-		// 							flexDirection='row'
-		// 							textAlign='center'
-		// 						/>
-		// 					</Box>
-		// 					<Box display='flex' flexDirection='row'>
-		// 						<Switch
-		// 							label='Status:'
-		// 							onChange={() => {
-		// 								setStatus(!status);
-		// 							}}
-		// 							checked={status}
-		// 							checkedName={status ? 'Ativo' : 'Inativo'}
-		// 						/>
-		// 					</Box>
-		// 				</Box>
+								<Box
+									width='20%'
+									paddingRight={`@/..{theme.spacing(1)}px`}
+									alignItems='center'
+									display='flex'
+									flexDirection='row'
+									textAlign='center'
+								/>
+							</Box>
+							<Box display='flex' flexDirection='row'>
+								<Switch
+									label='Status:'
+									onChange={() => {
+										setStatus(!status);
+									}}
+									checked={status}
+									checkedName={status ? 'Ativo' : 'Inativo'}
+								/>
+							</Box>
+						</Box>
 
-		// 				<hr />
-		// 				<Box>
-		// 					<Box display='flex' justifyContent='flex-start' align-items='flex-end'>
-		// 						<Button
-		// 							text={translate('associarTipoDocumento')}
-		// 							onClick={() => {
-		// 								setFieldValue('flagAddRelacionamento', true);
-		// 								setFieldValue('obrigatorioRelac', obrigatorio.value);
-		// 								setRelacionamentoListField([]);
-		// 								setFieldValue('validadeMesesRelac', null);
-		// 							}}
-		// 						/>
-		// 					</Box>
-		// 					<Table small>
-		// 						<TableHead columns={columnsRelac} rowCount={columnsRelac.length} />
-		// 						<TableBody>
-		// 							{funcionalidadesTipoDoc.map((item, index) => {
-		// 								variantTableRow =
-		// 									variantTableRow === theme.palette.table.tableRowPrimary
-		// 										? theme.palette.table.tableRowSecondary
-		// 										: theme.palette.table.tableRowPrimary;
+						<hr />
+						<Box>
+							<Box display='flex' justifyContent='flex-start' align-items='flex-end'>
+								<Button
+									text={translate('associarTipoDocumento')}
+									onClick={() => {
+										setFieldValue('flagAddRelacionamento', true);
+										setFieldValue('obrigatorioRelac', obrigatorio.value);
+										setRelacionamentoListField([]);
+										setFieldValue('validadeMesesRelac', null);
+									}}
+								/>
+							</Box>
+							<Table small>
+								<TableHead columns={columnsRelac} rowCount={columnsRelac.length} />
+								<TableBody>
+									{funcionalidadesTipoDoc.map((item, index) => {
+										variantTableRow =
+											variantTableRow === theme.palette.table.tableRowPrimary
+												? theme.palette.table.tableRowSecondary
+												: theme.palette.table.tableRowPrimary;
 
-		// 								return (
-		// 									<TableRow key={index} backgroundColor={variantTableRow}>
-		// 										<TableCell
-		// 											label={
-		// 												selectRelac.find(relac => relac.internalName === item.Funcionalidade)
-		// 													.label
-		// 											}
-		// 										/>
-		// 										<TableCell label={item.ValidadeMeses} />
-		// 										<TableCell label={item.Obrigatorio ? translate('sim') : translate('nao')} />
-		// 										<TableCell
-		// 											title={translate('editar')}
-		// 											label={
-		// 												<Box textAlign='center'>
-		// 													<IconButton
-		// 														size='small'
-		// 														onClick={() => editValidadeEstadoList(item.Funcionalidade)}
-		// 													>
-		// 														<Add />
-		// 													</IconButton>
-		// 												</Box>
-		// 											}
-		// 										/>
-		// 										<TableCell
-		// 											title={translate('excluir')}
-		// 											label={
-		// 												<IconButton
-		// 													size='small'
-		// 													onClick={() => removeFuncDoc(item.Funcionalidade)}
-		// 												>
-		// 													<Delete />
-		// 												</IconButton>
-		// 											}
-		// 										/>
-		// 									</TableRow>
-		// 								);
-		// 							})}
-		// 							{funcionalidadesTipoDoc.length === 0 && (
-		// 								<TableRow backgroundColor={variantTableRow}>
-		// 									<TableCell
-		// 										align='center'
-		// 										colSpan={6}
-		// 										label={translate('semResultadosAExibir')}
-		// 									/>
-		// 								</TableRow>
-		// 							)}
-		// 						</TableBody>
-		// 					</Table>
-		// 				</Box>
-		// 				<Box display='flex' width='60%' height='30%' flexDirection='row' alignItems='center'>
-		// 					<Modal
-		// 						open={flagAddRelacionamento.value}
-		// 						handleClose={() => setFieldValue('flagAddRelacionamento', false)}
-		// 						title={translate('relacionarFunc')}
-		// 						textButton={translate('adicionar')}
-		// 						onClickButton={() => addFuncDoc()}
-		// 						maxWidth='md'
-		// 						fullWidth
-		// 					>
-		// 						<Box display='flex' flexDirection='row'>
-		// 							<Box width='65%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 								<Typography display='block' variant='h6'>
-		// 									{`@/..{translate('ondeExigir')}`}
-		// 								</Typography>
-		// 								<Select
-		// 									style={{ width: '100%' }}
-		// 									multiple
-		// 									value={relacionamentoListField}
-		// 									onChange={addRelac}
-		// 									input={<OutlinedInput id='select-multiple-checkbox' margin='dense' />}
-		// 									renderValue={selected =>
-		// 										selected
-		// 											.map(s => selectRelac.find(relac => relac.internalName === s).label)
-		// 											.join(',')}
-		// 									MenuProps={MenuProps}
-		// 								>
-		// 									{parents.map(itemParent => (
-		// 										<Box>
-		// 											<Typography display='block' variant='h6'>
-		// 												{itemParent}
-		// 											</Typography>
-		// 											{selectRelac
-		// 												.filter(ip => ip.parent === itemParent)
-		// 												.map(il => il.internalName)
-		// 												.map(item => (
-		// 													<Box>
-		// 														<Typography display='block' variant='h6'>
-		// 															{item.parent}
-		// 														</Typography>
-		// 														<MenuItem key={item.value} value={item.value}>
-		// 															<Checkbox checked={relacionamentoListField.indexOf(item) > -1} />
-		// 															<ListItemText
-		// 																primary={
-		// 																	selectRelac.find(relac => relac.internalName === item).label
-		// 																}
-		// 															/>
-		// 														</MenuItem>
-		// 													</Box>
-		// 												))}
-		// 										</Box>
-		// 									))}
-		// 								</Select>
-		// 							</Box>
-		// 							<Box width='30%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 								<FormInput
-		// 									label={`@/..{translate('validadeMeses')}:`}
-		// 									name={validadeMesesRelac}
-		// 									type='number'
-		// 									InputProps={{ inputProps: { min: 0 } }}
-		// 								/>
-		// 							</Box>
-		// 							<Box display='flex' flexDirection='row'>
-		// 								<Typography display='block' variant='h6'>
-		// 									{`@/..{translate('obrigatorio')}`}
-		// 									<Checkbox
-		// 										display='block'
-		// 										onChange={() => handleChangeCheck(obrigatorioRelac)}
-		// 										checked={obrigatorioRelac.value}
-		// 										value={obrigatorioRelac}
-		// 									/>
-		// 								</Typography>
-		// 							</Box>
-		// 						</Box>
-		// 					</Modal>
-		// 				</Box>
-		// 				<Modal
-		// 					open={FlagAddValidadeEstado.value}
-		// 					handleClose={() => setFieldValue('flagAddValidadeEstado', false)}
-		// 					title={translate('adicionarEspecificidadeEstado')}
-		// 					textButton={translate('atualizar')}
-		// 					onClickButton={() => updateValidadeDocumentoListFuncionalidade()}
-		// 					maxWidth='sm'
-		// 					fullWidth
-		// 				>
-		// 					<Box display='flex' flexDirection='row' justifyContent='space-between'>
-		// 						<Box width='90%' display='flex' flexDirection='row'>
-		// 							<Box width='45%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 								<FormSelect
-		// 									label={`@/..{translate('Estado')}`}
-		// 									labelInitialItem={`@/..{translate('selecioneOpcao')}`}
-		// 									items={estadoList}
-		// 									value={estado.value}
-		// 									disabled={flagValidadeDocumentoEstadoEditId != null}
-		// 									onChange={event => {
-		// 										setFieldValue('estado', event.target.value);
-		// 									}}
-		// 								/>
-		// 							</Box>
-		// 							<Box width='35%' paddingRight={`@/..{theme.spacing(1)}px`}>
-		// 								<FormInput
-		// 									label={`@/..{translate('validadeMeses')}:`}
-		// 									name={validadeMesesEstado}
-		// 									type='number'
-		// 									InputProps={{ inputProps: { min: 0 } }}
-		// 								/>
-		// 							</Box>
-		// 							<Box
-		// 								width='10%'
-		// 								paddingRight={`@/..{theme.spacing(1)}px`}
-		// 								alignItems='center'
-		// 								display='flex'
-		// 								flexDirection='row'
-		// 								textAlign='center'
-		// 							>
-		// 								<Typography display='block' variant='h6'>
-		// 									{`@/..{translate('obrigatorio')}`}
-		// 									<Checkbox
-		// 										display='block'
-		// 										onChange={() => handleChangeCheck(obrigatorioEstado)}
-		// 										checked={obrigatorioEstado.value}
-		// 										value={obrigatorioEstado.value}
-		// 									/>
-		// 								</Typography>
-		// 							</Box>
-		// 						</Box>
-		// 						<Box width='10%' paddingTop={`@/..{theme.spacing(3)}px`}>
-		// 							<IconButton
-		// 								style={{ backgroundColor: '#336666', color: 'white' }}
-		// 								size='small'
-		// 								onClick={() => addValidadeDocumentoEstado()}
-		// 							>
-		// 								<Add />
-		// 							</IconButton>
-		// 						</Box>
-		// 					</Box>
-		// 					<Table small>
-		// 						<TableHead columns={columnsEstados} rowCount={columnsEstados.length} />
-		// 						<TableBody>
-		// 							{validadeDocumentoEstadoList.map((item, index) => {
-		// 								variantTableRow =
-		// 									variantTableRow === theme.palette.table.tableRowPrimary
-		// 										? theme.palette.table.tableRowSecondary
-		// 										: theme.palette.table.tableRowPrimary;
+										return (
+											<TableRow key={index} backgroundColor={variantTableRow}>
+												<TableCell
+													label={
+														selectRelac.find(relac => relac.internalName === item.Funcionalidade)
+															.label
+													}
+												/>
+												<TableCell label={item.ValidadeMeses} />
+												<TableCell label={item.Obrigatorio ? translate('sim') : translate('nao')} />
+												<TableCell
+													title={translate('editar')}
+													label={
+														<Box textAlign='center'>
+															<IconButton
+																size='small'
+																onClick={() => editValidadeEstadoList(item.Funcionalidade)}
+															>
+																<Add />
+															</IconButton>
+														</Box>
+													}
+												/>
+												<TableCell
+													title={translate('excluir')}
+													label={
+														<IconButton
+															size='small'
+															onClick={() => removeFuncDoc(item.Funcionalidade)}
+														>
+															<Delete />
+														</IconButton>
+													}
+												/>
+											</TableRow>
+										);
+									})}
+									{funcionalidadesTipoDoc.length === 0 && (
+										<TableRow backgroundColor={variantTableRow}>
+											<TableCell
+												align='center'
+												colSpan={6}
+												label={translate('semResultadosAExibir')}
+											/>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						</Box>
+						<Box display='flex' width='60%' height='30%' flexDirection='row' alignItems='center'>
+							<Modal
+								open={flagAddRelacionamento.value}
+								handleClose={() => setFieldValue('flagAddRelacionamento', false)}
+								title={translate('relacionarFunc')}
+								textButton={translate('adicionar')}
+								onClickButton={() => addFuncDoc()}
+								maxWidth='md'
+								fullWidth
+							>
+								<Box display='flex' flexDirection='row'>
+									<Box width='65%' paddingRight={`@/..{theme.spacing(1)}px`}>
+										<Typography display='block' variant='h6'>
+											{`@/..{translate('ondeExigir')}`}
+										</Typography>
+										<Select
+											style={{ width: '100%' }}
+											multiple
+											value={relacionamentoListField}
+											onChange={addRelac}
+											input={<OutlinedInput id='select-multiple-checkbox' margin='dense' />}
+											renderValue={selected =>
+												selected
+													.map(s => selectRelac.find(relac => relac.internalName === s).label)
+													.join(',')}
+											MenuProps={MenuProps}
+										>
+											{parents.map(itemParent => (
+												<Box>
+													<Typography display='block' variant='h6'>
+														{itemParent}
+													</Typography>
+													{selectRelac
+														.filter(ip => ip.parent === itemParent)
+														.map(il => il.internalName)
+														.map(item => (
+															<Box>
+																<Typography display='block' variant='h6'>
+																	{item.parent}
+																</Typography>
+																<MenuItem key={item.value} value={item.value}>
+																	<Checkbox checked={relacionamentoListField.indexOf(item) > -1} />
+																	<ListItemText
+																		primary={
+																			selectRelac.find(relac => relac.internalName === item).label
+																		}
+																	/>
+																</MenuItem>
+															</Box>
+														))}
+												</Box>
+											))}
+										</Select>
+									</Box>
+									<Box width='30%' paddingRight={`@/..{theme.spacing(1)}px`}>
+										<FormInput
+											label={`@/..{translate('validadeMeses')}:`}
+											name={validadeMesesRelac}
+											type='number'
+											InputProps={{ inputProps: { min: 0 } }}
+										/>
+									</Box>
+									<Box display='flex' flexDirection='row'>
+										<Typography display='block' variant='h6'>
+											{`@/..{translate('obrigatorio')}`}
+											<Checkbox
+												display='block'
+												onChange={() => handleChangeCheck(obrigatorioRelac)}
+												checked={obrigatorioRelac.value}
+												value={obrigatorioRelac}
+											/>
+										</Typography>
+									</Box>
+								</Box>
+							</Modal>
+						</Box>
+						<Modal
+							open={FlagAddValidadeEstado.value}
+							handleClose={() => setFieldValue('flagAddValidadeEstado', false)}
+							title={translate('adicionarEspecificidadeEstado')}
+							textButton={translate('atualizar')}
+							onClickButton={() => updateValidadeDocumentoListFuncionalidade()}
+							maxWidth='sm'
+							fullWidth
+						>
+							<Box display='flex' flexDirection='row' justifyContent='space-between'>
+								<Box width='90%' display='flex' flexDirection='row'>
+									<Box width='45%' paddingRight={`@/..{theme.spacing(1)}px`}>
+										<FormSelect
+											label={`@/..{translate('Estado')}`}
+											labelInitialItem={`@/..{translate('selecioneOpcao')}`}
+											items={estadoList}
+											value={estado.value}
+											disabled={flagValidadeDocumentoEstadoEditId != null}
+											onChange={event => {
+												setFieldValue('estado', event.target.value);
+											}}
+										/>
+									</Box>
+									<Box width='35%' paddingRight={`@/..{theme.spacing(1)}px`}>
+										<FormInput
+											label={`@/..{translate('validadeMeses')}:`}
+											name={validadeMesesEstado}
+											type='number'
+											InputProps={{ inputProps: { min: 0 } }}
+										/>
+									</Box>
+									<Box
+										width='10%'
+										paddingRight={`@/..{theme.spacing(1)}px`}
+										alignItems='center'
+										display='flex'
+										flexDirection='row'
+										textAlign='center'
+									>
+										<Typography display='block' variant='h6'>
+											{`@/..{translate('obrigatorio')}`}
+											<Checkbox
+												display='block'
+												onChange={() => handleChangeCheck(obrigatorioEstado)}
+												checked={obrigatorioEstado.value}
+												value={obrigatorioEstado.value}
+											/>
+										</Typography>
+									</Box>
+								</Box>
+								<Box width='10%' paddingTop={`@/..{theme.spacing(3)}px`}>
+									<IconButton
+										style={{ backgroundColor: '#336666', color: 'white' }}
+										size='small'
+										onClick={() => addValidadeDocumentoEstado()}
+									>
+										<Add />
+									</IconButton>
+								</Box>
+							</Box>
+							<Table small>
+								<TableHead columns={columnsEstados} rowCount={columnsEstados.length} />
+								<TableBody>
+									{validadeDocumentoEstadoList.map((item, index) => {
+										variantTableRow =
+											variantTableRow === theme.palette.table.tableRowPrimary
+												? theme.palette.table.tableRowSecondary
+												: theme.palette.table.tableRowPrimary;
 
-		// 								return (
-		// 									<TableRow key={index} backgroundColor={variantTableRow}>
-		// 										<TableCell
-		// 											label={_.find(estadoList, e => e.value === item.EstadoId).label}
-		// 										/>
-		// 										<TableCell
-		// 											label={<p style={{ textAlign: 'center' }}>{item.ValidadeMeses}</p>}
-		// 										/>
-		// 										<TableCell
-		// 											label={
-		// 												<p style={{ textAlign: 'center' }}>
-		// 													{item.Obrigatorio ? translate('sim') : translate('nao')}
-		// 												</p>
-		// 											}
-		// 											style={{ textAlign: 'center' }}
-		// 										/>
-		// 										<TableCell
-		// 											title={translate('editar')}
-		// 											label={
-		// 												<IconButton
-		// 													size='small'
-		// 													onClick={() => editarValidadeDocumentoEstado(item)}
-		// 												>
-		// 													<Edit />
-		// 												</IconButton>
-		// 											}
-		// 										/>
-		// 										<TableCell
-		// 											title={translate('excluir')}
-		// 											label={
-		// 												<IconButton
-		// 													size='small'
-		// 													onClick={() => removeValidadeDocumentoEstado(item.EstadoId)}
-		// 												>
-		// 													<Delete />
-		// 												</IconButton>
-		// 											}
-		// 										/>
-		// 									</TableRow>
-		// 								);
-		// 							})}
-		// 							{validadeDocumentoEstadoList.length === 0 && (
-		// 								<TableRow backgroundColor={variantTableRow}>
-		// 									<TableCell
-		// 										align='center'
-		// 										colSpan={6}
-		// 										label={translate('semResultadosAExibir')}
-		// 									/>
-		// 								</TableRow>
-		// 							)}
-		// 						</TableBody>
-		// 					</Table>
-		// 				</Modal>
-		// 			</BoxContentTab>
-		// 		)}
-		// 		{tab === 1 && (
-		// 			<BoxContentTab>
-		// 				<Table small>
-		// 					<TableHead columns={columnsVisaoGeral} rowCount={columnsVisaoGeral.length} />
-		// 					<TableBody>
-		// 						{getVisaoGeral().map((item, index) => {
-		// 							variantTableRow =
-		// 								variantTableRow === theme.palette.table.tableRowPrimary
-		// 									? '#dfe3e8b8'
-		// 									: theme.palette.table.tableRowPrimary;
+										return (
+											<TableRow key={index} backgroundColor={variantTableRow}>
+												<TableCell
+													label={_.find(estadoList, e => e.value === item.EstadoId).label}
+												/>
+												<TableCell
+													label={<p style={{ textAlign: 'center' }}>{item.ValidadeMeses}</p>}
+												/>
+												<TableCell
+													label={
+														<p style={{ textAlign: 'center' }}>
+															{item.Obrigatorio ? translate('sim') : translate('nao')}
+														</p>
+													}
+													style={{ textAlign: 'center' }}
+												/>
+												<TableCell
+													title={translate('editar')}
+													label={
+														<IconButton
+															size='small'
+															onClick={() => editarValidadeDocumentoEstado(item)}
+														>
+															<Edit />
+														</IconButton>
+													}
+												/>
+												<TableCell
+													title={translate('excluir')}
+													label={
+														<IconButton
+															size='small'
+															onClick={() => removeValidadeDocumentoEstado(item.EstadoId)}
+														>
+															<Delete />
+														</IconButton>
+													}
+												/>
+											</TableRow>
+										);
+									})}
+									{validadeDocumentoEstadoList.length === 0 && (
+										<TableRow backgroundColor={variantTableRow}>
+											<TableCell
+												align='center'
+												colSpan={6}
+												label={translate('semResultadosAExibir')}
+											/>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+						</Modal>
+					</BoxContentTab>
+				)}
+				{tab === 1 && (
+					<BoxContentTab>
+						<Table small>
+							<TableHead columns={columnsVisaoGeral} rowCount={columnsVisaoGeral.length} />
+							<TableBody>
+								{getVisaoGeral().map((item, index) => {
+									variantTableRow =
+										variantTableRow === theme.palette.table.tableRowPrimary
+											? '#dfe3e8b8'
+											: theme.palette.table.tableRowPrimary;
 
-		// 							return (
-		// 								<TableRow key={index} backgroundColor={variantTableRow}>
-		// 									<TableCell
-		// 										label={
-		// 											<p style={{ paddingLeft: item.Class, fontWeight: 500 - item.Class }}>
-		// 												{item.Padrao}
-		// 											</p>
-		// 										}
-		// 									/>
-		// 									<TableCell
-		// 										label={
-		// 											<p style={{ textAlign: 'center', fontWeight: 500 - item.Class }}>
-		// 												{item.ValidadeMeses}
-		// 											</p>
-		// 										}
-		// 									/>
-		// 									<TableCell
-		// 										label={
-		// 											<p style={{ textAlign: 'center', fontWeight: 500 - item.Class }}>
-		// 												{item.Obrigatorio ? translate('sim') : translate('nao')}
-		// 											</p>
-		// 										}
-		// 									/>
-		// 								</TableRow>
-		// 							);
-		// 						})}
-		// 						{getVisaoGeral().length === 0 && (
-		// 							<TableRow backgroundColor={variantTableRow}>
-		// 								<TableCell
-		// 									align='center'
-		// 									colSpan={6}
-		// 									label={translate('semResultadosAExibir')}
-		// 								/>
-		// 							</TableRow>
-		// 						)}
-		// 					</TableBody>
-		// 				</Table>
-		// 			</BoxContentTab>
-		// 		)}
-		// 		<Box display='flex' justifyContent='flex-end'>
-		// 			<Button
-		// 				text='Cancelar'
-		// 				backgroundColor={theme.palette.secondary.main}
-		// 				onClick={botaoCancelar}
-		// 			/>
-		// 			<Button
-		// 				text={id ? translate('atualizar') : translate('salvar')}
-		// 				type='submit'
-		// 				margin={`0px 0px 0px @/..{theme.spacing(1)}px`}
-		// 			/>
-		// 		</Box>
-		// 	</Form>
-		// </LayoutContent>
-		<div></div>
+									return (
+										<TableRow key={index} backgroundColor={variantTableRow}>
+											<TableCell
+												label={
+													<p style={{ paddingLeft: item.Class, fontWeight: 500 - item.Class }}>
+														{item.Padrao}
+													</p>
+												}
+											/>
+											<TableCell
+												label={
+													<p style={{ textAlign: 'center', fontWeight: 500 - item.Class }}>
+														{item.ValidadeMeses}
+													</p>
+												}
+											/>
+											<TableCell
+												label={
+													<p style={{ textAlign: 'center', fontWeight: 500 - item.Class }}>
+														{item.Obrigatorio ? translate('sim') : translate('nao')}
+													</p>
+												}
+											/>
+										</TableRow>
+									);
+								})}
+								{getVisaoGeral().length === 0 && (
+									<TableRow backgroundColor={variantTableRow}>
+										<TableCell
+											align='center'
+											colSpan={6}
+											label={translate('semResultadosAExibir')}
+										/>
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</BoxContentTab>
+				)}
+				<Box display='flex' justifyContent='flex-end'>
+					<Button
+						text='Cancelar'
+						backgroundColor={theme.palette.secondary.main}
+						onClick={botaoCancelar}
+					/>
+					<Button
+						text={id ? translate('atualizar') : translate('salvar')}
+						type='submit'
+						margin={`0px 0px 0px @/..{theme.spacing(1)}px`}
+					/>
+				</Box>
+			</Form>
+		</LayoutContent>
 	);
 }

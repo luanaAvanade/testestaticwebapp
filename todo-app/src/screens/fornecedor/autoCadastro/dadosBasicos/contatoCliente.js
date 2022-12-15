@@ -1,5 +1,5 @@
 import React from 'react';
-//import { FormInput, Card } from 'react-axxiom';
+import { FormInput, Card } from '@/components';
 import { Box, CardContent, CardHeader } from '@material-ui/core';
 import { translate } from '@/locales';
 import { checkError } from '@/utils/validation';
@@ -23,18 +23,18 @@ export default function ContatoCliente({
 	const { submitCount, getFieldProps, setFieldValue } = formulario;
 
 	const [
-		nomeContatoCemig,
-		metadataNomeContatoCemig
-	] = getFieldProps('nomeContatoCemig', 'text');
+		nomeContato,
+		metadataNomeContato
+	] = getFieldProps('nomeContato', 'text');
 
 	const [
-		emailContatoCemig,
-		metadataEmailContatoCemig
-	] = getFieldProps('emailContatoCemig', 'text');
+		emailContato,
+		metadataEmailContato
+	] = getFieldProps('emailContato', 'text');
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Card>
+			<Card>
 				<CardHeader
 					title={translate('contatoCliente')}
 					action={
@@ -57,25 +57,25 @@ export default function ContatoCliente({
 					<Box display='flex' flexDirection='row'>
 						<Box width='50%' paddingRight={`${theme.spacing(1)}px`}>
 							<FormInput
-								label={`${translate('nomeContatoCemig')}:`}
-								name={nomeContatoCemig}
-								error={checkError(submitCount, metadataNomeContatoCemig)}
+								label={`${translate('nomeContato')}:`}
+								name={nomeContato}
+								error={checkError(submitCount, metadataNomeContato)}
 								disabled={disableEdit}
 								required
 							/>
 						</Box>
 						<Box width='50%' paddingRight={`${theme.spacing(1)}px`}>
 							<FormInput
-								label={`${translate('emailContatoCemig')}:`}
-								name={emailContatoCemig}
-								error={checkError(submitCount, metadataEmailContatoCemig)}
+								label={`${translate('emailContato')}:`}
+								name={emailContato}
+								error={checkError(submitCount, metadataEmailContato)}
 								disabled={disableEdit}
 								required
 							/>
 						</Box>
 					</Box>
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }

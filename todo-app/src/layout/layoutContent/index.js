@@ -1,7 +1,7 @@
 import React, { useState, Fragment, memo } from 'react';
 import { Box } from '@material-ui/core';
 import useReactRouter from 'use-react-router';
-//import { Col, Container, Row } from 'react-bootstrap'
+import { Card } from 'react-axxiom';
 import { Topbar, Drawer, Content } from './style';
 import  Sidebar  from '../sidebar';
 import  Breadcrumbs  from '../breadCrumbs';
@@ -33,20 +33,17 @@ function LayoutContent({ children, widthCard, heightCard, noCard }) {
 			</Drawer>
 			<Box display='flex'>
 				<Content topbar sidebar={isOpen}>
-					{/* {children &&
+					{children &&
 					!noCard && (
 						<Fragment>
 							<Title text={paths.getTitle(paths.getCurrentPath(history))} />
 							<Breadcrumbs />
-							<Col className="px-0 colMainContent">
-                                <div className="mainContent">
-                                    {children}
-                                    {/* <Footer/> */}
-                              {/*  </div>
-                            </Col>
+							<Card width={widthCard} height={heightCard} padding={theme.spacing(1)}>
+								{children}
+							</Card>
 						</Fragment>
 					)}
-				{/*	{children && noCard && children} */}
+					{children && noCard && children}
 				</Content>
 			</Box>
 			<Footer />

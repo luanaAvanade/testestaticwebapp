@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//import { FormSelect, FormInput, Card, Confirm, FormSelectWithSearch } from 'react-axxiom';
+import { FormSelect, FormInput, Card, Confirm, FormSelectWithSearch } from '@/components';
 import {
 	Box,
 	CardHeader,
@@ -24,7 +24,8 @@ import Aprovacao from '@/screens/fornecedor/autoCadastro/aprovacao';
 import moment from 'moment';
 
 export default function DadosGerais({
-	formulario,
+	empresaId,
+  	formulario,
 	preCadastro,
 	itensAnalise,
 	setItensAnalise,
@@ -116,6 +117,7 @@ export default function DadosGerais({
 	//	Efeito Inicial
 
 	useEffect(() => {
+		//empresaFindById();
 		if (!preCadastro && cnpj.value) {
 			setCNPJOriginal(cnpj.value);
 		}
@@ -158,6 +160,24 @@ export default function DadosGerais({
 		]
 	);
 
+
+	const empresaFindById = async () => {
+		try {
+			const response = await EmpresaService.findById(empresaId);
+			if (response.data && response.data.Empresa_list.length > 0) {
+				response.data.Empresa_list[0].Historico = historicoEmpresa;
+				setDadosGerais(response.data.Empresa_list[0]);
+				dispatch(LoaderCreators.disableLoading());
+			} else {
+				dispatch(LoaderCreators.disableLoading());
+				//callbackError(translate('erroCarregamentoDadosEmpresa'));
+			}
+			dispatch(LoaderCreators.disableLoading());
+		} catch (error) {
+			dispatch(LoaderCreators.disableLoading());
+		}
+	};
+
 	const montaList = list => {
 		list.forEach(item => {
 			item.label = `${item.Codigo} - ${item.Descricao}`;
@@ -191,21 +211,118 @@ export default function DadosGerais({
 		}
 	};
 
-	const setDadosGerais = empresaExistente => {
-		setFieldValue('nomeEmpresa', empresaExistente.NomeEmpresa);
-		setFieldValue(
-			'dataAbertura',
-			moment(new Date(empresaExistente.DataAbertura)).format('YYYY-MM-DD')
-		);
-		setFieldValue('cep', empresaExistente.Enderecos[0].CEP);
-		setFieldValue(
-			'atividadeEconomicaPrincipal',
-			tipoEmpresa.value === PESSOAJURIDICA.id
-				? empresaExistente.AtividadeEconomicaPrincipalId
-				: empresaExistente.OcupacaoPrincipalId
-		);
-		setKey(key + 1);
+	const setDadosGerais = dados => {
+
+		var cep= dados.Enderecos.length > 0 ? dados.Enderecos[0].CEP : '';
+		var	logradouro= dados.Enderecos.length > 0 ? dados.Enderecos[0].Logradouro : '';
+		var numero= dados.Enderecos.length > 0 ? dados.Enderecos[0].Numero : '';
+		var	complemento= dados.Enderecos.length > 0 ? dados.Enderecos[0].Complemento : '';
+		var	bairro= dados.Enderecos.length > 0 ? dados.Enderecos[0].Bairro : '';
+		var	municipio= dados.Enderecos.length > 0 ? dados.Enderecos[0].Municipio.Id : '';
+		var	estado= dados.Enderecos.length > 0 ? dados.Enderecos[0].Municipio.EstadoId : '';
+
+		var cpf= dados.Enderecos.length > 0 ? dados.Usuarios[0].CPF : '';
+	    var nomeUsuario= dados.Enderecos.length > 0 ? dados.Usuarios[0].Nome : '';
+		var	telefone= dados.Enderecos.length > 0 ? dados.Usuarios[0].Telefone : '';
+		var	celular= dados.Enderecos.length > 0 ? dados.Usuarios[0].Celular : '';
+		var	cargoEmpresa= dados.Enderecos.length > 0 ? dados.Usuarios[0].CargoEmpresa : '';
+		var email= dados.Enderecos.length > 0 ? dados.Usuarios[0].Email : '';
+
+		var dataAbertura= dados.DataAbertura ? dados.DataAbertura.split('T')[0] : dados.DataAbertura;
+
+		var isentoIE= dados.IsentoIE > 0 ?  true : false;
+
+		setFieldValue('isentoIE', isentoIE);
+		setFieldValue('cpf', cpf);
+		setFieldValue('nomeUsuario', nomeUsuario);
+		setFieldValue('telefone', telefone);
+		setFieldValue('celular', celular);
+		setFieldValue('cargoEmpresa', cargoEmpresa);
+		setFieldValue('email', email);
+
+		setFieldValue('dataAbertura', dataAbertura);
+
+		setFieldValue('cnpj', dados.CNPJ);
+		setFieldValue('nomeEmpresa', dados.NomeEmpresa);
+		setFieldValue('inscricaoEstadual', dados.InscricaoEstadual);
+		setFieldValue('inscricaoMunicipal', dados.InscricaoMunicipal);
+
+		setFieldValue('optanteSimplesNacional', dados.OptanteSimplesNacional);
+		setFieldValue('atividadeEconomicaPrincipal', dados.AtividadeEconomicaPrincipalId);
+		setFieldValue('ocupacaoPrincipal', dados.OcupacaoPrincipalId);
+		
+		
+		setFieldValue('cep', cep);
+		setFieldValue('logradouro', logradouro);
+		setFieldValue('numero', numero);
+		setFieldValue('complemento', complemento);
+		setFieldValue('bairro', bairro);
+		setFieldValue('municipio', municipio);
+		setFieldValue('estado', estado);
+		setFieldValue('aceitoCondicoes', true);
+		
+
+		// setValues({
+		// 	tipoCadastro: dados.TipoCadastro,
+		// 	tipoEmpresa: dados.TipoEmpresa,
+		// 	nomeContato: dados.ContatoSolicitante ? dados.ContatoSolicitante.NomeContato : '',
+		// 	emailContato: dados.ContatoSolicitante ? dados.ContatoSolicitante.Email : '',
+		// 	cnpj: dados.CNPJ,
+		// 	nomeEmpresa: dados.NomeEmpresa,
+		// 	inscricaoEstadual: dados.InscricaoEstadual,
+		// 	isentoIE: dados.IsentoIE,
+		// 	inscricaoMunicipal: dados.InscricaoMunicipal,
+		// 	optanteSimplesNacional: dados.OptanteSimplesNacional,
+		// 	dataAbertura: dados.DataAbertura ? dados.DataAbertura.split('T')[0] : dados.DataAbertura,
+		// 	atividadeEconomicaPrincipal: dados.AtividadeEconomicaPrincipalId,
+		// 	ocupacaoPrincipal: dados.OcupacaoPrincipalId,
+		// 	cep: dados.Enderecos.length > 0 ? dados.Enderecos[0].CEP : '',
+		// 	logradouro: dados.Enderecos.length > 0 ? dados.Enderecos[0].Logradouro : '',
+		// 	numero: dados.Enderecos.length > 0 ? dados.Enderecos[0].Numero : '',
+		// 	complemento: dados.Enderecos.length > 0 ? dados.Enderecos[0].Complemento : '',
+		// 	bairro: dados.Enderecos.length > 0 ? dados.Enderecos[0].Bairro : '',
+		// 	municipio: dados.Enderecos.length > 0 ? dados.Enderecos[0].Municipio.Id : '',
+		// 	estado: dados.Enderecos.length > 0 ? dados.Enderecos[0].Municipio.EstadoId : '',
+		// 	//contatosAdicionais: dados.ContatosAdicionais,
+		// 	setEndereco: dados.Enderecos.length > 0 ? dados.Enderecos[0] : '',
+		// 	cpfMei: dados.DadosPessoaFisica.CPF ? dados.DadosPessoaFisica.CPF : '',
+		// 	dataNascimento: dados.DadosPessoaFisica.DataNascimento
+		// 		? dados.DadosPessoaFisica.DataNascimento.split('T')[0]
+		// 		: dados.DadosPessoaFisica.DataNascimento,
+		// 	pisPasepNit: dados.DadosPessoaFisica.PisPasepNit ? dados.DadosPessoaFisica.PisPasepNit : '',
+		// 	sexo: dados.DadosPessoaFisica.Sexo
+		// 		? dados.DadosPessoaFisica.Sexo === MASCULINO.id ? 'M' : 'F'
+		// 		: '',
+		// 	estadoNascimento: dados.DadosPessoaFisica.Municipio
+		// 		? dados.DadosPessoaFisica.Municipio.EstadoId
+		// 		: 0,
+		// 	cidadeNascimento: dados.DadosPessoaFisica.Municipio
+		// 		? dados.DadosPessoaFisica.Municipio.Id
+		// 		: 0,
+		// 	cpf: dados.Usuarios[0].CPF,
+		// 	nomeUsuario: dados.Usuarios[0].Nome,
+		// 	telefone: dados.Usuarios[0].Telefone,
+		// 	celular: dados.Usuarios[0].Celular,
+		// 	cargoEmpresa: dados.Usuarios[0].CargoEmpresa,
+		// 	email: dados.Usuarios[0].Email
+		// });
 	};
+
+	// const setDadosGerais = empresaExistente => {
+	// 	setFieldValue('nomeEmpresa', empresaExistente.NomeEmpresa);
+	// 	setFieldValue(
+	// 		'dataAbertura',
+	// 		moment(new Date(empresaExistente.DataAbertura)).format('YYYY-MM-DD')
+	// 	);
+	// 	setFieldValue('cep', empresaExistente.Enderecos[0].CEP);
+	// 	setFieldValue(
+	// 		'atividadeEconomicaPrincipal',
+	// 		tipoEmpresa.value === PESSOAJURIDICA.id
+	// 			? empresaExistente.AtividadeEconomicaPrincipalId
+	// 			: empresaExistente.OcupacaoPrincipalId
+	// 	);
+	// 	setKey(key + 1);
+	// };
 
 	const buscarEmpresa = () => {
 		dispatch(LoaderCreators.setLoading(translate('buscandoDadosFornecedor')));
@@ -305,31 +422,31 @@ export default function DadosGerais({
 		}
 	};
 
-	// const getSelectSearch = (list, label, placeholder) => {
-	// 	return (
-	// 		<FormSelectWithSearch
-	// 			key={key}
-	// 			placeholder={placeholder}
-	// 			label={label}
-	// 			options={list}
-	// 			getOptionLabel={option => option.Codigo + '-' + option.Descricao}
-	// 			value={getAtividade(
-	// 				tipoEmpresa.value === PESSOAJURIDICA.id
-	// 					? atividadeEconomicaPrincipal.value
-	// 					: ocupacaoPrincipal.value
-	// 			)}
-	// 			onChange={(event, selected) => setAtividade(selected)}
-	// 			onFocus={() => setTouchedAtividade()}
-	// 			error={checkError(submitCount, metadataAtividadeEconomicaPrincipal)}
-	// 			disabled={disableEdit}
-	// 			required
-	// 		/>
-	// 	);
-	// };
+	const getSelectSearch = (list, label, placeholder) => {
+		return (
+			<FormSelectWithSearch
+				key={key}
+				placeholder={placeholder}
+				label={label}
+				options={list}
+				getOptionLabel={option => option.Codigo + '-' + option.Descricao}
+				value={getAtividade(
+					tipoEmpresa.value === PESSOAJURIDICA.id
+						? atividadeEconomicaPrincipal.value
+						: ocupacaoPrincipal.value
+				)}
+				onChange={(event, selected) => setAtividade(selected)}
+				onFocus={() => setTouchedAtividade()}
+				error={checkError(submitCount, metadataAtividadeEconomicaPrincipal)}
+				disabled={disableEdit}
+				required
+			/>
+		);
+	};
 
 	return (
 		<Box paddingTop={`${theme.spacing(1)}px`}>
-			{/* <Card>
+			<Card>
 				<Confirm
 					open={modalCnpjJaCadastrado}
 					handleClose={limparCNPJ}
@@ -460,7 +577,7 @@ export default function DadosGerais({
 						</Box>
 					</Box>
 				</CardContent>
-			</Card> */}
+			</Card>
 		</Box>
 	);
 }

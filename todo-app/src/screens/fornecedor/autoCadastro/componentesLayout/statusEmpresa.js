@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Box } from '@material-ui/core';
-//import { Button } from 'react-axxiom';
+import { Button } from 'react-axxiom';
 import theme from '@/theme';
 import { translate } from '@/locales';
 import {ENUM_STATUS_ANALISE} from '@/utils/constants';

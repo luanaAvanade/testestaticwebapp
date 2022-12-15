@@ -166,6 +166,7 @@ export default {
 		encerrar: 'Encerrar',
 		endereco: 'Endereço',
 		entrar: 'Entrar',
+
 		enviarCadastro: 'Enviar cadastro',
 		erroInesperado:
 			'Ocorreu um erro inesperado no sistema.<br/><br/>Informe seu login e imagem do erro <strong><a style="color: white;" href="mailto:suporte.gicaf@axxiom.com.br?subject=Soma Fornecedores - Erro no sistema.">clicando aqui</a></strong>.',
@@ -579,6 +580,29 @@ export default {
 		desejaRealmenteAlterarPerguntaQualificacao:
 			'Deseja Realmente Alterar a Pergunta de Qualificação',
 		dadosDemonstracaoResultadoExercicio: '<h5>Dados Demonstração do Resultado do Exercício</h5>',
-		erroCadastrarfomulario: 'Erro ao cadastrar o Formulário'
+		erroCadastrarfomulario: 'Erro ao cadastrar o Formulário',
+		ativoTotal:'Ativo Total',
+		circulanteAtivo:'Circulante Ativo',
+		outrosAtivosCirculante:'Outros Ativos Circulantes',
+		disponibilidades:'Disponibilidades',
+		estoques:'Estoques',
+		ativoNaoCirculante:'Ativo Não Circulante',
+		passivoTotal:'Passivo Total',
+		circulantePassivo:'Circulante Passivo',
+		emprestimosFinanciamentoCirculante:'Empréstimos Financiamento Circulante',
+		emprestimosFinanciamentoNaoCirculante:'Empréstimos Financiamento Não Circulante',
+		outrosPassivosNaoCirculantes:'Outros Passivos Não Circulantes',
+		outrosPassivosCirculantes:'Outros Passivos Circulantes',
+		naoCirculantePassivo:'Não Circulante Passivo',
+		patrimonioLiquido:'Patrimônio Líquido',
+		despesasVendasAdministrativasGeraisOutras:'Despesas Vendas Administrativas',
+		custoProdutosVendidosMercadoriasVendidasServicosPrestados:'Custo Produtos Vendidos, Mercadorias Vendidas',
+		resultadoOperacionalBruto:'Resultado Operacional Bruto',
+		despesasFinanceiras:'Despesas Financeiras',
+		receitasFinanceiras:'Receitas Financeiras',
+		resultadoOperacionalAntesIrCssl:'Resultado Operacional Antes de ir Cssl',
+		resultadoLiquidoPeriodo:'Resultado Líquido do Período',
+		receitaOperacionalLiquida:'Receita Operacional Líquida'
+
 	}
 };

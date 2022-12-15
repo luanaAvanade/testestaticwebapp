@@ -5,13 +5,14 @@ import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
 import { Box } from '@material-ui/core';
 import useReactRouter from 'use-react-router';
-//import { Button, Confirm, FormInput } from 'react-axxiom';
+import { Button, Confirm, FormInput } from 'react-axxiom';
 import { LayoutContent } from '@/layout';
 import { translate } from '@/locales';
 import { Creators as LoaderCreators } from '@/store/ducks/loader';
 
 import { snackError, snackSuccess, snackWarning } from '@/utils/snack';
 import theme from '@/theme';
+import TipoContatoService from '@/services/tipoContato';
 import { checkError } from '@/utils/validation';
 
 import { Switch } from '../../style';
@@ -52,7 +53,7 @@ export default function CadastrarTipoContato() {
 
 	const tipoContatoFindById = async () => {
 		dispatch(LoaderCreators.setLoading());
-		const response = null;
+		const response = await TipoContatoService.findById(id);
 		if (response.data) {
 			setFieldValue('nome', response.data.TipoContato.Nome, false);
 			setFieldValue('descricao', response.data.TipoContato.Descricao, false);
@@ -83,11 +84,35 @@ export default function CadastrarTipoContato() {
 		}
 	};
 	const create = async () => {
-		
+		TipoContatoService.verificarExistente(nome.value).then(response => {
+			if (response.data.TipoContato_list.length > 0) {
+				callbackWarning(translate('itemExistente'));
+			} else {
+				TipoContatoService.create(getTipoContato())
+					.then(() => callback(translate('novoTipoContatoCadatradoSucesso')))
+					.catch(() => callbackError(translate('erroCadastrarNovoTipoContato')));
+			}
+		});
 	};
 
 	const update = async () => {
-		
+		TipoContatoService.verificarExistente(nome.value).then(response => {
+			if (
+				response.data.TipoContato_list.length > 0 &&
+				response.data.TipoContato_list.some(t => t.Id !== id)
+			) {
+				callbackWarning(translate('itemExistente'));
+			} else {
+				TipoContatoService.update(id, {
+					Nome: nome.value,
+					Descricao: descricao.value,
+					Status: status
+				})
+					.then(() => callback(translate('tipoContatoAlteradoComSucesso')))
+					.catch(() => callbackError(translate('erroAlterarTipoContato')));
+			}
+			setOpenConfirmAlterar(false);
+		});
 	};
 
 	// Ações de Retorno
@@ -135,43 +160,42 @@ export default function CadastrarTipoContato() {
 	] = getFieldProps('descricao', 'text');
 
 	return (
-		// <LayoutContent>
-		// 	<Confirm
-		// 		open={openConfirmAlterar}
-		// 		handleClose={() => setOpenConfirmAlterar(false)}
-		// 		handleSuccess={update}
-		// 		title={translate('confirmacao')}
-		// 		text={translate('desejaRealmenteAlterarTipoContato')}
-		// 		textButtonSuccess={translate('sim')}
-		// 		textButtonCancel={translate('nao')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	/>
+		<LayoutContent>
+			<Confirm
+				open={openConfirmAlterar}
+				handleClose={() => setOpenConfirmAlterar(false)}
+				handleSuccess={update}
+				title={translate('confirmacao')}
+				text={translate('desejaRealmenteAlterarTipoContato')}
+				textButtonSuccess={translate('sim')}
+				textButtonCancel={translate('nao')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			/>
 
-		// 	<Form onSubmit={handleSubmit}>
-		// 		<FormInput
-		// 			label={`@/..{translate('nome')}:`}
-		// 			name={nome}
-		// 			error={checkError(submitCount, metadataNome)}
-		// 		/>
-		// 		<FormInput label={`@/..{translate('descricao')}:`} name={descricao} />
-		// 		<Switch
-		// 			label='Status:'
-		// 			onChange={() => {
-		// 				setStatus(!status);
-		// 			}}
-		// 			checked={status}
-		// 			checkedName={status ? 'Ativo' : 'Inativo'}
-		// 		/>
-		// 		<Box display='flex' justifyContent='flex-end'>
-		// 			<Button text='Voltar' backgroundColor={theme.palette.secondary.main} onClick={voltar} />
-		// 			<Button
-		// 				text={id ? translate('atualizar') : translate('salvar')}
-		// 				type='submit'
-		// 				margin={`0px 0px 0px @/..{theme.spacing(1)}px`}
-		// 			/>
-		// 		</Box>
-		// 	</Form>
-		// </LayoutContent>
-		<div></div>
+			<Form onSubmit={handleSubmit}>
+				<FormInput
+					label={`@/..{translate('nome')}:`}
+					name={nome}
+					error={checkError(submitCount, metadataNome)}
+				/>
+				<FormInput label={`@/..{translate('descricao')}:`} name={descricao} />
+				<Switch
+					label='Status:'
+					onChange={() => {
+						setStatus(!status);
+					}}
+					checked={status}
+					checkedName={status ? 'Ativo' : 'Inativo'}
+				/>
+				<Box display='flex' justifyContent='flex-end'>
+					<Button text='Voltar' backgroundColor={theme.palette.secondary.main} onClick={voltar} />
+					<Button
+						text={id ? translate('atualizar') : translate('salvar')}
+						type='submit'
+						margin={`0px 0px 0px @/..{theme.spacing(1)}px`}
+					/>
+				</Box>
+			</Form>
+		</LayoutContent>
 	);
 }

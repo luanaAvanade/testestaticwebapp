@@ -4,9 +4,11 @@ import { Route, Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Box, IconButton, Typography } from '@material-ui/core';
 import useReactRouter from 'use-react-router';
-import { HowToReg, PersonAdd, History, MonetizationOn } from '@material-ui/icons';
+import { HowToReg, PersonAdd, History, MonetizationOn} from '@material-ui/icons';
+import  CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import { useSnackbar } from 'notistack';
-//import { Button, Modal, FormSelect, FormSelectWithSearch } from 'react-axxiom';
+import { Button, Modal, FormSelect, FormSelectWithSearch } from 'react-axxiom';
 import { LayoutContent } from '@/layout';
 import { Creators as LoaderCreators } from '@/store/ducks/loader';
 import { translate } from '@/locales';
@@ -156,81 +158,47 @@ export default function ListagemAnalise() {
 		setAnaliseCadastroList(temp);
 	};
 
+	const setFiltroAnalises = value => {
+		if (value == 'MinhasAnalises') {
+			setFiltroMinhasAnalises(true);
+			setFiltroAnalisesPendentes(false);
+		} else if (value == 'AnalisesPendentes') {
+			setFiltroMinhasAnalises(false);
+			setFiltroAnalisesPendentes(true);
+		}
+	};
+
 	// Buscar Dados
 
 	const analiseFindAll = async () => {
-		//dispatch(LoaderCreators.setLoading());
+		dispatch(LoaderCreators.setLoading());
 		const u = getUser();
+		
 		const usuario = {
 			perfilAnalista: true,
-			id: "123"
+			id: "1"
 		};
 
 		
 		setUser(usuario);
 
 
-		var UsuarioEmp = {
-			Nome: 'Luana Rodrigues Santos'
+
+		const response = await EmpresaService.findEmpresasWithWhereClause('Id!=null and Id > 143');
+		if (response.data) {
+			let t = response.data.Empresa_list.sort(sort);
+			setAnaliseCadastroList(t);
+			setAnaliseCadastroListInitial(t);
+			// const responseUsers = await LoginService.getUsersInRole('Analista de Cadastro');
+			// if (responseUsers) {
+			// 	setUsuarioList(responseUsers);
+			// } else {
+			// }
+			dispatch(LoaderCreators.disableLoading());
+		} else {
+			callbackError(translate('erroCarregarDados'));
+			dispatch(LoaderCreators.disableLoading());
 		}
-
-		var UsuarioEmp2 = {
-			Nome: 'Luana Rodrigues Santos'
-		}
-
-		var AnaliseCadastro = {
-			StatusAnalise: 0,
-			AtribuidoId: 1,
-			TransmitidoId: '',
-			Atribuido: UsuarioEmp,
-			Transmitido: UsuarioEmp2,
-			
-
-		};
-
-		var calcRiscoLista = [
-		{
-			ClassificacaoFase1: 1
-		}
-
-		];
-
-
-		var empresa = [
-		{
-			Id: 1,
-			Situacao: 2,
-			NomeEmpresa: 'Empresa telecom',
-			CalculoRiscoLista: calcRiscoLista,
-			CNPJ: '123456789',
-			TipoEmpresa: '1',
-			TipoCadastro: 'cadastro empresa',
-			DataCriacao: '',
-			AnaliseCadastro: AnaliseCadastro
-			
-		}
-
-];
-
-		 	setAnaliseCadastroList(empresa);
-		 	setAnaliseCadastroListInitial(empresa);
-
-		// const response = await EmpresaService.findEmpresasWithWhereClause('Id!=null');
-		// if (response.data) {
-		// 	let t = response.data.Empresa_list.sort(sort);
-		// 	setAnaliseCadastroList(t);
-		// 	setAnaliseCadastroListInitial(t);
-		// 	const responseUsers = await LoginService.getUsersInRole('Analista de Cadastro');
-		// 	if (responseUsers) {
-		// 		setUsuarioList(responseUsers);
-		// 	} else {
-		// 		callbackError(translate('erroCarregarDados'));
-		// 	}
-		// 	dispatch(LoaderCreators.disableLoading());
-		// } else {
-		// 	callbackError(translate('erroCarregarDados'));
-		// 	dispatch(LoaderCreators.disableLoading());
-		// }
 	};
 
 	function sort(a, b) {
@@ -251,7 +219,7 @@ export default function ListagemAnalise() {
 	// // Ações da Tela
 
 	const open = id => {
-		history.push(`@/..{SUBDIRETORIO_LINK}/cadastro-complementar/@/..{id}`);
+		history.push(`${SUBDIRETORIO_LINK}/cadastro-complementar/${id}`);
 	};
 
 	const selfAssignee = async idEmpresa => {
@@ -268,8 +236,69 @@ export default function ListagemAnalise() {
 			const response = await EmpresaService.update(idEmpresa, empresaSave);
 
 			if (response.data && response.data.Empresa_update) {
-				history.push(`@/..{SUBDIRETORIO_LINK}/cadastro-complementar/@/..{idEmpresa}`);
+				history.push(`${SUBDIRETORIO_LINK}/cadastro-complementar/${idEmpresa}`);
 				//analiseFindAll();
+				callback(translate('sucessoAtribuicaoAnalise'));
+			} else {
+				callbackError(translate('erroAtribuicaoAnalise'));
+			}
+		} catch (error) {
+			callbackError(translate('erroAtribuicaoAnalise'));
+		}
+	};
+
+
+	const aprovar = async idEmpresa => {
+		dispatch(LoaderCreators.setLoading());
+		try {
+
+			let empresaSave = {
+				
+				AnaliseCadastro: {
+					Id: analiseCadastroList.find(x => x.Id === idEmpresa).AnaliseCadastro.Id,
+					StatusAnalise: ENUM_STATUS_ANALISE.find(x => x.internalName === 'Aprovado')
+						.internalName,
+						AtribuidoId: user.id
+				}
+			};
+
+			const responseEmpresa = await EmpresaService.findByIdAproveReprove(idEmpresa);
+			if (responseEmpresa.data && responseEmpresa.data.Empresa_list.length > 0) {
+
+				var empresa = responseEmpresa.data.Empresa_list[0];
+				empresa.AnaliseCadastro = empresaSave.AnaliseCadastro;
+				const response = await EmpresaService.update(idEmpresa, empresa);
+
+			if (response.data && response.data.Empresa_update) {
+				analiseFindAll();
+				callback(translate('sucessoAtribuicaoAnalise'));
+			} else {
+				callbackError(translate('erroAtribuicaoAnalise'));
+			}
+
+			}
+		
+			
+		} catch (error) {
+			callbackError(translate('erroAtribuicaoAnalise'));
+		}
+	};
+
+
+	const reprovar = async idEmpresa => {
+		dispatch(LoaderCreators.setLoading());
+		try {
+			let empresaSave = {
+				AnaliseCadastro: {
+					Id: analiseCadastroList.find(x => x.Id === idEmpresa).AnaliseCadastro.Id,
+					StatusAnalise: ENUM_STATUS_ANALISE.find(x => x.internalName === 'Reprovado')
+						.internalName
+				}
+			};
+			const response = await EmpresaService.update(idEmpresa, empresaSave);
+
+			if (response.data && response.data.Empresa_update) {
+				analiseFindAll();
 				callback(translate('sucessoAtribuicaoAnalise'));
 			} else {
 				callbackError(translate('erroAtribuicaoAnalise'));
@@ -402,301 +431,291 @@ export default function ListagemAnalise() {
 		semPermissao();
 	}
 
-	const setFiltroAnalises = value => {
-		if (value == 'MinhasAnalises') {
-			setFiltroMinhasAnalises(true);
-			setFiltroAnalisesPendentes(false);
-		} else if (value == 'AnalisesPendentes') {
-			setFiltroMinhasAnalises(false);
-			setFiltroAnalisesPendentes(true);
-		}
-	};
-
 	return (
-		// <LayoutContent>
-		// 	{user &&
-		// 	user.perfilAnalista && (
-		// 		<Fragment>
-		// 			<FiltroAnalise
-		// 				openFiltro={openFiltro}
-		// 				setOpenFiltro={setOpenFiltro}
-		// 				setFiltro={setFiltro}
-		// 			/>
-		// 			<Modal
-		// 				open={empresaId}
-		// 				handleClose={() => setEmpresaId(null)}
-		// 				title={
-		// 					empresaId ? (
-		// 						`${translate('transmitirAnalise')}: ${analiseCadastroList.find(
-		// 							x => x.Id === empresaId
-		// 						).NomeEmpresa}`
-		// 					) : (
-		// 						translate('transmitirAnalise')
-		// 					)
-		// 				}
-		// 				textButton={translate('transmitir')}
-		// 				onClickButton={() => assigneeTo()}
-		// 			>
-		// 				<FormSelectWithSearch
-		// 					key={key}
-		// 					placeholder={`${translate('selecioneOpcao')}`}
-		// 					label={`${translate('usuario')}`}
-		// 					options={usuarioList}
-		// 					getOptionLabel={option => option.nome}
-		// 					//value={event.target.value}
-		// 					onChange={(event, selected) => setAssignee(selected == null ? null : selected.id)}
-		// 				/>
-		// 			</Modal>
-		// 			<Box display='flex' justify='flex-start' justifyContent='space-between' width='30%'>
-		// 				<Button
-		// 					text={translate('minhasAnalises')}
-		// 					backgroundColor={
-		// 						!filtroMinhasAnalises ? theme.palette.primary.main : theme.palette.secondary.main
-		// 					}
-		// 					//onClick={() => setFiltroAnalises('MinhasAnalises')}
-		// 				/>
-		// 				<Button
-		// 					text={translate('analisesPendentes')}
-		// 					backgroundColor={
-		// 						!filtroAnalisesPendentes ? theme.palette.primary.main : theme.palette.secondary.main
-		// 					}
-		// 					onClick={() => setFiltroAnalises('AnalisesPendentes')}
-		// 				/>
-		// 			</Box>
-		// 			<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons' />
-		// 			<MaterialTable
-		// 				key={key}
-		// 				columns={[
-		// 					{
-		// 						title: 'Fornecedor',
-		// 						field: 'NomeEmpresa',
-		// 						// defaultFilter: rowData.NomeEmpresa.includes(filtro['nomeEmpresa']),
-		// 						cellStyle: {
-		// 							width: '35%'
-		// 						},
-		// 						render: rowData => (
-		// 							<Box onClick={() => open(rowData.Id)} style={{ cursor: 'pointer' }}>
-		// 								<Typography
-		// 									variant='caption'
-		// 									color='textPrimary'
-		// 									style={{
-		// 										fontWeight: 'bold',
-		// 										textDecoration: rowData.Situacao === 2 ? 'line-through' : ''
-		// 									}}
-		// 								>
-		// 									{rowData.NomeEmpresa}
-		// 								</Typography>
-		// 								<IconButton
-		// 									size='small'
-		// 									// onClick={() => selfAssignee(rowData.Id)}
-		// 									title={getPropRisco(rowData.CalculoRiscoLista).label}
-		// 									style={{
-		// 										color: getPropRisco(rowData.CalculoRiscoLista).color
-		// 									}}
-		// 								>
-		// 									<MonetizationOn />
-		// 								</IconButton>
-		// 								<br />
-		// 								<Typography variant='caption' color='textSecondary'>
-		// 									{`Cnpj: ${rowData.CNPJ}`}
-		// 								</Typography>
-		// 							</Box>
-		// 						),
-		// 						customFilterAndSearch: (term, rowData) =>
-		// 							rowData.NomeEmpresa.toUpperCase().includes(term.toUpperCase()) ||
-		// 							rowData.CNPJ.includes(term)
-		// 					},
-		// 					{
-		// 						title: 'Tipo Empresa',
-		// 						field: 'TipoEmpresa',
-		// 						render: rowData => (
-		// 							<Box width='100%'>
-		// 								<Typography variant='caption' color='textSecondary'>
-		// 									{`${translate(
-		// 										TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa)
-		// 											? TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa).internalName
-		// 											: ''
-		// 									)}
-		// 									|| ${translate(rowData.TipoCadastro)}`}
-		// 									<br />
-		// 									{`Data criação: ${ObjectHelper.showData(rowData.DataCriacao)}`}
-		// 								</Typography>
-		// 							</Box>
-		// 						),
-		// 						customFilterAndSearch: (term, rowData) => {
-		// 							var conteudo = `${translate(
-		// 								TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa)
-		// 									? TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa).internalName
-		// 									: ''
-		// 							)}
-		// 							|| ${translate(rowData.TipoCadastro)} 
-		// 							Data criação: ${ObjectHelper.showData(rowData.DataCriacao)}`;
+		<LayoutContent>
+			{user &&
+			user.perfilAnalista && (
+				<Fragment>
+					<FiltroAnalise
+						openFiltro={openFiltro}
+						setOpenFiltro={setOpenFiltro}
+						setFiltro={setFiltro}
+					/>
+					<Modal
+						open={empresaId}
+						handleClose={() => setEmpresaId(null)}
+						title={
+							empresaId ? (
+								`${translate('transmitirAnalise')}: ${analiseCadastroList.find(
+									x => x.Id === empresaId
+								).NomeEmpresa}`
+							) : (
+								translate('transmitirAnalise')
+							)
+						}
+						textButton={translate('transmitir')}
+						onClickButton={() => assigneeTo()}
+					>
+						<FormSelectWithSearch
+							key={key}
+							placeholder={`${translate('selecioneOpcao')}`}
+							label={`${translate('usuario')}`}
+							options={usuarioList}
+							getOptionLabel={option => option.nome}
+							//value={event.target.value}
+							onChange={(event, selected) => setAssignee(selected == null ? null : selected.id)}
+						/>
+					</Modal>
+					<Box display='flex' justify='flex-start' justifyContent='space-between' width='30%'>
+						<Button
+							text={translate('minhasAnalises')}
+							backgroundColor={
+								!filtroMinhasAnalises ? theme.palette.primary.main : theme.palette.secondary.main
+							}
+							onClick={() => setFiltroAnalises('MinhasAnalises')}
+						/>
+						<Button
+							text={translate('analisesPendentes')}
+							backgroundColor={
+								!filtroAnalisesPendentes ? theme.palette.primary.main : theme.palette.secondary.main
+							}
+							onClick={() => setFiltroAnalises('AnalisesPendentes')}
+						/>
+					</Box>
+					<link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons' />
+					<MaterialTable
+						key={key}
+						columns={[
+							{
+								title: 'Fornecedor',
+								field: 'NomeEmpresa',
+								// defaultFilter: rowData.NomeEmpresa.includes(filtro['nomeEmpresa']),
+								cellStyle: {
+									width: '35%'
+								},
+								render: rowData => (
+									<Box onClick={() => open(rowData.Id)} style={{ cursor: 'pointer' }}>
+										<Typography
+											variant='caption'
+											color='textPrimary'
+											style={{
+												fontWeight: 'bold',
+												textDecoration: rowData.Situacao === 2 ? 'line-through' : ''
+											}}
+										>
+											{rowData.NomeEmpresa}
+										</Typography>
+										<IconButton
+											size='small'
+											 onClick={() => selfAssignee(rowData.Id)}
+											title={getPropRisco(rowData.CalculoRiscoLista).label}
+											style={{
+												color: getPropRisco(rowData.CalculoRiscoLista).color
+											}}
+										>
+											<MonetizationOn />
+										</IconButton>
+										<br />
+										<Typography variant='caption' color='textSecondary'>
+											{`Cnpj: ${rowData.CNPJ}`}
+										</Typography>
+									</Box>
+								),
+								customFilterAndSearch: (term, rowData) =>
+									rowData.NomeEmpresa.toUpperCase().includes(term.toUpperCase()) ||
+									rowData.CNPJ.includes(term)
+							},
+							{
+								title: 'Tipo Empresa',
+								field: 'TipoEmpresa',
+								render: rowData => (
+									<Box width='100%'>
+										<Typography variant='caption' color='textSecondary'>
+											{`${translate(
+												TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa)
+													? TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa).internalName
+													: ''
+											)}
+											|| ${translate(rowData.TipoCadastro)}`}
+											<br />
+											{`Data criação: ${ObjectHelper.showData(rowData.DataCriacao)}`}
+										</Typography>
+									</Box>
+								),
+								customFilterAndSearch: (term, rowData) => {
+									var conteudo = `${translate(
+										TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa)
+											? TIPO_EMPRESA.find(x => x.value === rowData.TipoEmpresa).internalName
+											: ''
+									)}
+									|| ${translate(rowData.TipoCadastro)} 
+									Data criação: ${ObjectHelper.showData(rowData.DataCriacao)}`;
 
-		// 							return conteudo.toUpperCase().includes(term.toUpperCase());
-		// 						},
-		// 						cellStyle: {
-		// 							width: '30%'
-		// 						}
-		// 					},
-		// 					{
-		// 						title: 'Status',
-		// 						field: 'AnaliseCadastro.StatusAnalise',
-		// 						render: rowData => (
-		// 							<Box margin='0% 5% 0% 5%'>
-		// 								<StatusEmpresa statusEmpresa={rowData.AnaliseCadastro.StatusAnalise} />
-		// 								{getResponsable(rowData)}
-		// 							</Box>
-		// 						),
-		// 						customFilterAndSearch: (term, rowData) =>
-		// 							ENUM_STATUS_ANALISE.find(
-		// 								x => x.value === rowData.AnaliseCadastro.StatusAnalise
-		// 							).label.includes(term),
-		// 						cellStyle: {
-		// 							width: '20%'
-		// 						}
-		// 					},
+									return conteudo.toUpperCase().includes(term.toUpperCase());
+								},
+								cellStyle: {
+									width: '30%'
+								}
+							},
+							{
+								title: 'Status',
+								field: 'AnaliseCadastro.StatusAnalise',
+								render: rowData => (
+									<Box margin='0% 5% 0% 5%'>
+										<StatusEmpresa statusEmpresa={rowData.AnaliseCadastro.StatusAnalise} />
+										{getResponsable(rowData)}
+									</Box>
+								),
+								customFilterAndSearch: (term, rowData) =>
+									ENUM_STATUS_ANALISE.find(
+										x => x.value === rowData.AnaliseCadastro.StatusAnalise
+									).label.includes(term),
+								cellStyle: {
+									width: '20%'
+								}
+							},
 
-		// 					{
-		// 						title: 'Ações',
-		// 						render: rowData => (
-		// 							<Box display='flex' justify='space-between' margin='auto'>
-		// 								<IconButton
-		// 									size='small'
-		// 									onClick={() => selfAssignee(rowData.Id)}
-		// 									title={'Assumir'}
-		// 									style={{
-		// 										color: `rgb(36,36,156,${desablitarAcoes(rowData, 'assumir') ? 0.3 : 1})`
-		// 									}}
-		// 									disabled={desablitarAcoes(rowData, 'assumir')}
-		// 								>
-		// 									<HowToReg />
-		// 								</IconButton>
-		// 								<IconButton
-		// 									size='small'
-		// 									onClick={() => setEmpresaId(rowData.Id)}
-		// 									title={'Transmitir'}
-		// 									style={{
-		// 										color: `rgb(51,102,102,${desablitarAcoes(rowData) ? 0.3 : 1})`
-		// 									}}
-		// 									disabled={desablitarAcoes(rowData)}
-		// 								>
-		// 									<PersonAdd />
-		// 								</IconButton>
-		// 								<IconButton
-		// 									size='small'
-		// 									onClick={() => alert('Funcionalidade ainda não implementada!')}
-		// 									title={'Funcionalidade ainda não implementada!'}
-		// 									style={{
-		// 										color: `rgb(0,0,255,0.3)`
-		// 									}}
-		// 								>
-		// 									<History />
-		// 								</IconButton>
-		// 							</Box>
-		// 						),
-		// 						cellStyle: {
-		// 							width: '5%'
-		// 						},
-		// 						filter: false,
-		// 						search: false,
-		// 						sorting: false
-		// 					}
-		// 				]}
-		// 				data={analiseCadastroList}
-		// 				actions={[
-		// 					{
-		// 						icon: 'swap_vert',
-		// 						tooltip: translate('reordenar'),
-		// 						onClick: (event, rowData) => {
-		// 							let temp = ObjectHelper.clone(analiseCadastroList);
-		// 							temp = temp.sort(sort);
-		// 							setAnaliseCadastroList(temp);
-		// 							setKey(key + 1);
-		// 						},
-		// 						isFreeAction: true
-		// 					},
-		// 					{
-		// 						icon: 'filter_list',
-		// 						tooltip: translate('filtro'),
-		// 						onClick: (event, rowData) => setOpenFiltro(true),
-		// 						isFreeAction: true
-		// 					},
-		// 					{
-		// 						icon: 'clear',
-		// 						tooltip: translate('limparFiltros'),
-		// 						onClick: (event, rowData) => {
-		// 							setFiltro(null);
-		// 							setFiltroAnalisesPendentes(false);
-		// 							setFiltroMinhasAnalises(false);
-		// 							analiseFindAll();
-		// 						},
-		// 						isFreeAction: true
-		// 					}
-		// 				]}
-		// 				options={{
-		// 					pageSizeOptions: ROWSPERPAGE,
-		// 					filtering: true,
-		// 					padding: 'dense',
-		// 					headerStyle: {
-		// 						backgroundColor: '#336666',
-		// 						color: '#FFF',
-		// 						padding: '0px 8px 0px 8px',
-		// 						textAlign: 'center',
-		// 						alignContent: 'center'
-		// 					},
-		// 					filterCellStyle: {
-		// 						padding: '0px',
-		// 						minHeight: '25px'
-		// 					},
-		// 					actionsColumnIndex: 3,
-		// 					columnsButton: true,
-		// 					showTitle: false,
-		// 					rowStyle: (rowData, index, level) => {
-		// 						return {
-		// 							backgroundColor:
-		// 								index % 2 === 0
-		// 									? '#eee' //theme.palette.table.tableRowPrimary
-		// 									: '#ddd' //theme.palette.table.tableRowSecondary
-		// 						};
-		// 					},
-		// 					actionsCellStyle: {
-		// 						padding: '0% 3% 0% 3%'
-		// 					}
-		// 				}}
-		// 				localization={{
-		// 					pagination: {
-		// 						labelRowsPerPage: 'Linhas',
-		// 						labelRowsSelect: 'Linhas',
-		// 						firstTooltip: 'Primeira Página',
-		// 						firstAriaLabel: 'Primeira Página',
-		// 						previousTooltip: 'Página Anterior',
-		// 						previousAriaLabel: 'Anterior',
-		// 						nextTooltip: 'Próxima Página',
-		// 						nextAriaLabel: 'Próxima',
-		// 						lastTooltip: 'Última Página',
-		// 						lastAriaLabel: 'Última'
-		// 					},
-		// 					toolbar: {
-		// 						searchPlaceholder: 'Pesquisar',
-		// 						showColumnsTitle: 'Mostrar título da coluna',
-		// 						searchTooltip: 'Pesquisar'
-		// 					},
-		// 					header: {
-		// 						actions: 'string;'
-		// 					}
-		// 				}}
-		// 			/>
+							{
+								title: 'Ações',
+								render: rowData => (
+									<Box display='flex' justify='space-between' margin='auto'>
+										<IconButton
+											size='small'
+											onClick={() => selfAssignee(rowData.Id)}
+											title={'Assumir'}
+											style={{
+												color: `rgb(36,36,156,${desablitarAcoes(rowData, 'assumir') ? 0.3 : 1})`
+											}}
+											disabled={desablitarAcoes(rowData, 'assumir')}
+										>
+											<HowToReg />
+										</IconButton>
+										<IconButton
+											size='small'
+											onClick={() => aprovar(rowData.Id)}
+											title={'Aprovar'}
+											style={{
+												color: `rgb(51,102,102,${desablitarAcoes(rowData) ? 0.3 : 1})`
+											}}
+											disabled={desablitarAcoes(rowData)}
+										>
+											<CheckIcon />
+										</IconButton>
+										<IconButton
+											size='small'
+											onClick={() => reprovar(rowData.Id)}
+											title={'Reprovar'}
+											style={{
+												color: `rgb(220,20,60)`
+											}}
+											disabled={desablitarAcoes(rowData)}
+										>
+											<ClearIcon />
+										</IconButton>
+									</Box>
+								),
+								cellStyle: {
+									width: '5%'
+								},
+								filter: false,
+								search: false,
+								sorting: false
+							}
+						]}
+						data={analiseCadastroList}
+						actions={[
+							{
+								icon: 'swap_vert',
+								tooltip: translate('reordenar'),
+								onClick: (event, rowData) => {
+									let temp = ObjectHelper.clone(analiseCadastroList);
+									temp = temp.sort(sort);
+									setAnaliseCadastroList(temp);
+									setKey(key + 1);
+								},
+								isFreeAction: true
+							},
+							{
+								icon: 'filter_list',
+								tooltip: translate('filtro'),
+								onClick: (event, rowData) => setOpenFiltro(true),
+								isFreeAction: true
+							},
+							{
+								icon: 'clear',
+								tooltip: translate('limparFiltros'),
+								onClick: (event, rowData) => {
+									setFiltro(null);
+									setFiltroAnalisesPendentes(false);
+									setFiltroMinhasAnalises(false);
+									analiseFindAll();
+								},
+								isFreeAction: true
+							}
+						]}
+						options={{
+							pageSizeOptions: ROWSPERPAGE,
+							filtering: true,
+							padding: 'dense',
+							headerStyle: {
+								backgroundColor: '#336666',
+								color: '#FFF',
+								padding: '0px 8px 0px 8px',
+								textAlign: 'center',
+								alignContent: 'center'
+							},
+							filterCellStyle: {
+								padding: '0px',
+								minHeight: '25px'
+							},
+							actionsColumnIndex: 3,
+							columnsButton: true,
+							showTitle: false,
+							rowStyle: (rowData, index, level) => {
+								return {
+									backgroundColor:
+										index % 2 === 0
+											? '#eee' //theme.palette.table.tableRowPrimary
+											: '#ddd' //theme.palette.table.tableRowSecondary
+								};
+							},
+							actionsCellStyle: {
+								padding: '0% 3% 0% 3%'
+							}
+						}}
+						localization={{
+							pagination: {
+								labelRowsPerPage: 'Linhas',
+								labelRowsSelect: 'Linhas',
+								firstTooltip: 'Primeira Página',
+								firstAriaLabel: 'Primeira Página',
+								previousTooltip: 'Página Anterior',
+								previousAriaLabel: 'Anterior',
+								nextTooltip: 'Próxima Página',
+								nextAriaLabel: 'Próxima',
+								lastTooltip: 'Última Página',
+								lastAriaLabel: 'Última'
+							},
+							toolbar: {
+								searchPlaceholder: 'Pesquisar',
+								showColumnsTitle: 'Mostrar título da coluna',
+								searchTooltip: 'Pesquisar'
+							},
+							header: {
+								actions: 'string;'
+							}
+						}}
+					/>
 
-		// 			<Box display='flex' justifyContent='flex-end' padding='5px'>
-		// 				<Button
-		// 					text={translate('voltar')}
-		// 					backgroundColor={theme.palette.secondary.main}
-		// 					onClick={voltar}
-		// 				/>
-		// 			</Box>
-		// 		</Fragment>
-		// 	)}
-		// </LayoutContent>
-		<div>teste</div>
+					<Box display='flex' justifyContent='flex-end' padding='5px'>
+						<Button
+							text={translate('voltar')}
+							backgroundColor={theme.palette.secondary.main}
+							onClick={voltar}
+						/>
+					</Box>
+				</Fragment>
+			)}
+		</LayoutContent>
 	);
 }

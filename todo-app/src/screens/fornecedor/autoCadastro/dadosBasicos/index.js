@@ -14,7 +14,7 @@ import {
 	FormHelperText,
 	Typography
 } from '@material-ui/core';
-//import { Button, FormSelect, Card, Confirm, Modal } from 'react-axxiom';
+import { Button, FormSelect, Card, Confirm, Modal } from '@/components';
 import { Form } from 'formik';
 import { useSnackbar } from 'notistack';
 import { Creators as LoaderCreators } from '@/store/ducks/loader';
@@ -53,6 +53,9 @@ import { getDisableEdit, getStatusItem } from '../aprovacao/util';
 
 export default function DadosBasicos({
 	empresa,
+	empresaId,
+	setEmpresaId,
+	setEmpresa,
 	empresaFindById,
 	itensAnalise,
 	setItensAnalise,
@@ -122,10 +125,10 @@ export default function DadosBasicos({
 	// Efeito Inicial
 
 	useEffect(() => {
-		if (preCadastro) {
 			estadoFindAll();
-		}
-
+		
+			console.log('DADOS EMPRESA');
+			console.log(empresaId);
 		if (empresa) {
 			setDadosEmpresa(empresa);
 		}
@@ -145,9 +148,21 @@ export default function DadosBasicos({
 			tab
 		]
 	);
+
 	useEffect(
 		() => {
-			if (acao && acao !== null && (tab === TAB_DADOS_BASICOS || preCadastro)) {
+			if (empresa) {
+				setDadosEmpresa(empresa);
+			}
+		},
+		[
+			empresa
+		]
+	);
+
+	useEffect(
+		() => {
+			if (acao && acao !== null && acao !== "validar" && (tab === TAB_DADOS_BASICOS || preCadastro)) {
 				switch (acao) {
 					case COMANDO_CADASTRO_FORNECEDOR.criarCadastro:
 					case COMANDO_CADASTRO_FORNECEDOR.enviarCadastro:
@@ -169,7 +184,7 @@ export default function DadosBasicos({
 				handleSubmit();
 			}
 			if (acao === COMANDO_CADASTRO_FORNECEDOR.descartarAlteracoes) {
-				setDadosEmpresa(empresa);
+				//setDadosEmpresa(empresa);
 				setDadosBasicosIsValid(isValid);
 			}
 		},
@@ -196,8 +211,8 @@ export default function DadosBasicos({
 		setValues({
 			tipoCadastro: dados.TipoCadastro,
 			tipoEmpresa: dados.TipoEmpresa,
-			nomeContatoCemig: dados.ContatoSolicitante ? dados.ContatoSolicitante.NomeContato : '',
-			emailContatoCemig: dados.ContatoSolicitante ? dados.ContatoSolicitante.Email : '',
+			nomeContato: dados.ContatoSolicitante ? dados.ContatoSolicitante.NomeContato : '',
+			emailContato: dados.ContatoSolicitante ? dados.ContatoSolicitante.Email : '',
 			cnpj: dados.CNPJ,
 			nomeEmpresa: dados.NomeEmpresa,
 			inscricaoEstadual: dados.InscricaoEstadual,
@@ -244,8 +259,8 @@ export default function DadosBasicos({
 	const initialValues = {
 		tipoCadastro: '',
 		tipoEmpresa: 0,
-		emailContatoCemig: '',
-		nomeContatoCemig: '',
+		emailContato: '',
+		nomeContato: '',
 		cnpj: '',
 		nomeEmpresa: '',
 		inscricaoEstadual: '',
@@ -271,7 +286,6 @@ export default function DadosBasicos({
 		confirmarEmail: '',
 		senha: '',
 		confirmarSenha: '',
-		//contatosAdicionais: [],
 		dadosPessoaFisica: {},
 		aceitoCondicoes: false,
 		dataNascimento: '',
@@ -315,7 +329,7 @@ export default function DadosBasicos({
 		return true;
 	};
 
-	const testEmailContatoCemig = value => {
+	const testEmailContato = value => {
 		if (tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo) {
 			if (!value) {
 				setMessageValidateEmail(translate('campoObrigatorio'));
@@ -330,7 +344,7 @@ export default function DadosBasicos({
 		return true;
 	};
 
-	const testNomeContatoCemig = value => {
+	const testNomeContato = value => {
 		if (tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo) {
 			if (!value) {
 				setMessageValidateEmail(translate('campoObrigatorio'));
@@ -453,17 +467,6 @@ export default function DadosBasicos({
 			testSelectRequired(value)
 		),
 		tipoCadastro: Yup.string().required(translate('campoObrigatorio')),
-		// emailContatoCemig: Yup.string()
-		// 	.nullable()
-		// 	.test('emailContatoCemigRequired', messageValidateEmail, value =>
-		// 		testEmailContatoCemig(value)
-		// 	),
-		// nomeContatoCemig: Yup.string()
-		// 	.nullable()
-		// 	.test('nomeContatoCemig', translate('campoObrigatorio'), value =>
-		// 		testNomeContatoCemig(value)
-		// 	),
-
 		cnpj: Yup.string().test('CNPJ', messageValidateCNPJ, value => testeCNPJ(value)),
 		nomeEmpresa: Yup.string().required(translate('campoObrigatorio')),
 		inscricaoEstadual: Yup.string().test(
@@ -471,22 +474,12 @@ export default function DadosBasicos({
 			translate('campoObrigatorio'),
 			value => testIncricaoEstadual(value)
 		),
-		// optanteSimplesNacional: Yup.string().test(
-		// 	'optanteSimplesNacional',
-		// 	translate('campoObrigatorio'),
-		// 	value => testSelectRequired(value)
-		// ),
+		optanteSimplesNacional: Yup.string().test(
+			'optanteSimplesNacional',
+			translate('campoObrigatorio'),
+			value => testSelectRequired(value)
+		),
 		dataAbertura: Yup.string().test('dataAbertura', messageValidateData, value => testData(value)),
-		// atividadeEconomicaPrincipal: Yup.string()
-		// 	.nullable()
-		// 	.test('atividadeEconomicaPrincipal', translate('campoObrigatorio'), value =>
-		// 		testAtividadeEconomicaPrincipal(value)
-		// 	),
-		// ocupacaoPrincipal: Yup.string().test(
-		// 	'ocupacaoPrincipal',
-		// 	translate('campoObrigatorio'),
-		// 	value => testOcupacaoPrincipal(value)
-		// ),
 		cep: Yup.string().required(translate('campoObrigatorio')),
 		logradouro: Yup.string().required(translate('campoObrigatorio')),
 		numero: Yup.string().required(translate('campoObrigatorio')),
@@ -497,16 +490,16 @@ export default function DadosBasicos({
 		municipio: Yup.string().test('municipio', translate('campoObrigatorio'), value =>
 			testSelectRequired(value)
 		),
-		// nomeUsuario: Yup.string().test('nomeUsuario', translate('campoObrigatorio'), value =>
-		// 	testRequiredPreCadastro(value)
-		// ),
+		nomeUsuario: Yup.string().test('nomeUsuario', translate('campoObrigatorio'), value =>
+			testRequiredPreCadastro(value)
+		),
 		cpf: Yup.string().test('cpf', messageValidateCPF, value => testCpfUsuario(value)),
 		telefone: Yup.string().test('telefone', translate('campoObrigatorio'), value =>
 			testRequiredPreCadastro(value)
 		),
-		// cargoEmpresa: Yup.string().test('cargoEmpresa', translate('campoObrigatorio'), value =>
-		// 	testRequiredPreCadastro(value)
-		// ),
+		cargoEmpresa: Yup.string().test('cargoEmpresa', translate('campoObrigatorio'), value =>
+			testRequiredPreCadastro(value)
+		),
 		email: Yup.string()
 			.email('Email invalído.')
 			.test('email', translate('campoObrigatorio'), value => testRequiredPreCadastro(value)),
@@ -535,25 +528,25 @@ export default function DadosBasicos({
 		// 	translate('adicionePeloMenosUmContato'),
 		// 	value => value.length > 0
 		// ),
-		// aceitoCondicoes: Yup.string().test('aceitoCondicoes', translate('campoObrigatorio'), value =>
-		// 	testCheckedRequired(value)
-		// ),
-		// dataNascimento: Yup.string()
-		// 	.nullable()
-		// 	.test('dataNascimento', messageValidateData, value => testDataNascimento(value)),
-		// cpfMei: Yup.string().test('cpf', messageValidateCPF, value => testCpfMei(value)),
-		// pisPasepNit: Yup.string().test('pisPasepNit', translate('campoObrigatorio'), value =>
-		// 	testTipoEmpresaMei(value)
-		// ),
-		// estadoNascimento: Yup.string().test('estadoNascimento', translate('campoObrigatorio'), value =>
-		// 	testSelectRequiredMei(value)
-		// ),
-		// cidadeNascimento: Yup.string().test('cidadeNascimento', translate('campoObrigatorio'), value =>
-		// 	testSelectRequiredMei(value)
-		// ),
-		// sexo: Yup.string().test('optanteSimplesNacional', translate('campoObrigatorio'), value =>
-		// 	testSelectRequiredMei(value)
-		// )
+		aceitoCondicoes: Yup.string().test('aceitoCondicoes', translate('campoObrigatorio'), value =>
+			testCheckedRequired(value)
+		),
+		dataNascimento: Yup.string()
+			.nullable()
+			.test('dataNascimento', messageValidateData, value => testDataNascimento(value)),
+		cpfMei: Yup.string().test('cpf', messageValidateCPF, value => testCpfMei(value)),
+		pisPasepNit: Yup.string().test('pisPasepNit', translate('campoObrigatorio'), value =>
+			testTipoEmpresaMei(value)
+		),
+		estadoNascimento: Yup.string().test('estadoNascimento', translate('campoObrigatorio'), value =>
+			testSelectRequiredMei(value)
+		),
+		cidadeNascimento: Yup.string().test('cidadeNascimento', translate('campoObrigatorio'), value =>
+			testSelectRequiredMei(value)
+		),
+		sexo: Yup.string().test('optanteSimplesNacional', translate('campoObrigatorio'), value =>
+			testSelectRequiredMei(value)
+		)
 	});
 
 	const {
@@ -585,7 +578,7 @@ export default function DadosBasicos({
 
 	useEffect(
 		() => {
-			if (!preCadastro && !_.isEmpty(touched)) {
+			if (preCadastro && !_.isEmpty(touched)) {
 				setChanged(true);
 			}
 		},
@@ -595,8 +588,8 @@ export default function DadosBasicos({
 	);
 
 	const {
-		emailContatoCemig,
-		nomeContatoCemig,
+		emailContato,
+		nomeContato,
 		cnpj,
 		nomeEmpresa,
 		isentoIE,
@@ -655,8 +648,8 @@ export default function DadosBasicos({
 	};
 
 	const setTipoCadastro = value => {
-		setFieldValue('nomeContatoCemig', '');
-		setFieldValue('emailContatoCemig', '');
+		setFieldValue('nomeContato', '');
+		setFieldValue('emailContato', '');
 		setFieldValue('tipoCadastro', value);
 	};
 
@@ -673,46 +666,7 @@ export default function DadosBasicos({
 		}
 	};
 
-	const callbackMensagemSucesso = async () => {
-		if (acao == COMANDO_CADASTRO_FORNECEDOR.enviarCadastro) {
-			callback(translateWithHtml('fornecedorAtualizadoSucesso'));
-		} else {
-			if (preCadastro) {
-				callback(translateWithHtml('fornecedorCadatradoSucesso'));
-			} else {
-				callback(translateWithHtml('cadastroSalvoComSucesso'));
-			}
-		}
-	};
-
-	const create = async () => {
-		dispatch(LoaderCreators.setLoading());
-		const response = await EmpresaService.create(getFornecedor());
-		if (response.data.Empresa_insert) {
-			callbackMensagemSucesso();
-		} else {
-			callbackError(translate('erroCadastrarfomulario'));
-		}
-		dispatch(LoaderCreators.disableLoading());
-	};
-
-	const update = async () => {
-		dispatch(LoaderCreators.setLoading());
-		try {
-			const response = await EmpresaService.update(empresa.Id, getFornecedor());
-			if (response.data && response.data.Empresa_update) {
-				empresaFindById();
-				callbackMensagemSucesso();
-			} else {
-				callbackError(translateWithHtml('erroInesperado'));
-			}
-			dispatch(LoaderCreators.disableLoading());
-		} catch (error) {
-			dispatch(LoaderCreators.disableLoading());
-			callbackError(translateWithHtml('erroInesperado'));
-		}
-	};
-
+	
 	const getFornecedor = () => {
 		const newFornecedor = {
 			NomeEmpresa: nomeEmpresa,
@@ -729,15 +683,19 @@ export default function DadosBasicos({
 			TipoEmpresa: tipoEmpresa.value,
 			TipoCadastro: tipoCadastro.value,
 			Enderecos: getEndereco(),
+			
 			//ContatosAdicionais: contatosAdicionais
 		};
 
 		if (preCadastro) {
-			newFornecedor.Usuarios = getDadosAcesso();
+			if (acao && acao != COMANDO_CADASTRO_FORNECEDOR) {
+				newFornecedor.Usuarios = getDadosAcesso();
+			}
+			newFornecedor.AnaliseCadastro = getAnaliseCadastro();
 		}
 
 		if (!preCadastro) {
-			newFornecedor.AnaliseCadastro = getAnaliseCadastro();
+			
 			newFornecedor.TermoAceiteEmpresa = getTermosAceite();
 			newFornecedor.Comentarios = getComentarios();
 			const url = `${document.location.origin}${SUBDIRETORIO_LINK}`;
@@ -757,14 +715,91 @@ export default function DadosBasicos({
 
 		if (tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo) {
 			const contatoSolicitante = {};
-			contatoSolicitante.NomeContato = nomeContatoCemig;
-			contatoSolicitante.Email = emailContatoCemig;
+			contatoSolicitante.NomeContato = nomeContato;
+			contatoSolicitante.Email = emailContato;
 
 			newFornecedor.ContatoSolicitante = contatoSolicitante;
 		}
 
+		console.log("ENDERECOS");
+		console.log(newFornecedor.Enderecos);
+
 		return newFornecedor;
 	};
+
+	const callbackMensagemSucesso = async () => {
+		if (acao == COMANDO_CADASTRO_FORNECEDOR.enviarCadastro) {
+			callback(translateWithHtml('fornecedorAtualizadoSucesso'));
+		} else {
+			if (preCadastro) {
+				callback(translateWithHtml('fornecedorCadatradoSucesso'));
+			} else {
+				callback(translateWithHtml('cadastroSalvoComSucesso'));
+			}
+		}
+	};
+
+	const getEmpresaSaved  = async (empresaId) =>{
+		const response = await EmpresaService.findById(empresaId);
+			if (response.data && response.data.Empresa_list.length > 0) {
+				setEmpresa(response.data.Empresa_list[0]);
+				setEmpresaId(empresaId);
+				setKey(key + 1);
+			}
+	}
+
+	const create = async () => {
+		dispatch(LoaderCreators.setLoading());
+		var response = null;
+		if(empresaId && empresaId != null && empresaId > 0){
+			
+				response = await EmpresaService.update(empresaId, getFornecedor());	
+			if (response && response != null && response.data && response.data.Empresa_update) {
+				setDadosBasicosIsValid(true);
+				setEmpresaId(response.data.Empresa_update.Id);
+				if (acao && acao != COMANDO_CADASTRO_FORNECEDOR.enviarCadastro) {
+					setEmpresa(response.data.Empresa_update);
+				}		
+				getEmpresaSaved(empresaId);	
+				callbackMensagemSucesso();
+			} else {
+				callbackError(translate('erroCadastrarfomulario'));
+			}
+	
+		}
+		else{
+			response = await EmpresaService.create(getFornecedor());
+			if (response && response != null && response.data && response.data.Empresa_insert) {
+				setDadosBasicosIsValid(true);
+				setEmpresaId(response.data.Empresa_insert.Id);
+				setEmpresa(response.data.Empresa_insert);
+				getEmpresaSaved(response.data.Empresa_insert.Id);
+				callbackMensagemSucesso();
+			} else {
+				callbackError(translate('erroCadastrarfomulario'));
+			}
+		}
+		
+		dispatch(LoaderCreators.disableLoading());
+	};
+
+	const update = async () => {
+		dispatch(LoaderCreators.setLoading());
+		try {
+			const response = await EmpresaService.update(empresa.Id, getFornecedor());
+			if (response.data && response.data.Empresa_update) {
+				//empresaFindById();
+				callbackMensagemSucesso();
+			} else {
+				callbackError(translateWithHtml('erroInesperado'));
+			}
+			dispatch(LoaderCreators.disableLoading());
+		} catch (error) {
+			dispatch(LoaderCreators.disableLoading());
+			callbackError(translateWithHtml('erroInesperado'));
+		}
+	};
+
 
 	const getTermosAceite = () => {
 		const t = ObjectHelper.clone(listTermosAceiteEmpresa);
@@ -805,8 +840,8 @@ export default function DadosBasicos({
 						Celular: celular,
 						CargoEmpresa: cargoEmpresa,
 						Email: email,
-						PassWord: senha,
-						ConfirmPassWord: confirmarSenha,
+						PassWord: "Lu@n@s@ntos123",
+						ConfirmPassWord: "Lu@n@s@ntos123",
 						UserName: email,
 						LinkConfirmacao: `${url}/confirmacao-cadastro-fornecedor?userName={userName}&token={token}`
 					}
@@ -864,9 +899,6 @@ export default function DadosBasicos({
 
 	const callback = mensagem => {
 		enqueueSnackbar('', snackSuccess(mensagem, closeSnackbar));
-		if (!empresa) {
-			irParaLogin();
-		}
 	};
 
 	const callbackError = mensagem => {
@@ -882,259 +914,239 @@ export default function DadosBasicos({
 	};
 
 	return (
-		// <Form id='dadosBasico' onSubmit={handleSubmit}>
-		// 	<Fragment>
-		// 		{!empresa && (
-		// 			<Box paddingTop={`${theme.spacing(1)}px`}>
-		// 				<Card>
-		// 					<CardContent>
-		// 						<Box display='flex' flexDirection='row'>
-		// 							<FormSelect
-		// 								label={`${translate('labelSelectFornecedor')}`}
-		// 								labelInitialItem={translate('selecioneOpcao')}
-		// 								items={TIPO_EMPRESA}
-		// 								value={tipoEmpresa.value}
-		// 								onChange={event => {
-		// 									resetForm();
-		// 									setTipoEmpresa(event.target.value);
-		// 								}}
-		// 								error={checkError(submitCount, metadataTipoEmpresa)}
-		// 								width='300px'
-		// 							/>
-		// 						</Box>
-		// 						<Box display='flex' flexDirection='row'>
-		// 							<RadioGroup
-		// 								value={tipoCadastro.value}
-		// 								onChange={event => {
-		// 									setTipoCadastro(event.target.value);
-		// 								}}
-		// 								row
-		// 							>
-		// 								<FormControlLabel
-		// 									value={CADASTRO_CENTRALIZADO.codigo}
-		// 									control={<Radio color='primary' />}
-		// 									label={`${translate('cadastroCentralizadoApenasLicitacoes')}`}
-		// 									labelPlacement='end'
-		// 								/>
-		// 								<FormControlLabel
-		// 									value={CADASTRO_DESCENTRALIZADO.codigo}
-		// 									control={<Radio color='primary' />}
-		// 									label={`${translate('cadastroDescentralizadoApenasUsuariosCemig')}`}
-		// 									labelPlacement='end'
-		// 								/>
-		// 							</RadioGroup>
-		// 						</Box>
-		// 						<Mensagem>{getMensagem()}</Mensagem>
-		// 					</CardContent>
-		// 				</Card>
-		// 			</Box>
-		// 		)}
-		// 		{tipoEmpresa.value !== 0 && (
-		// 			<Fragment>
-		// 				{tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo && (
-		// 					<ContatoCliente
-		// 						formulario={{ submitCount, getFieldProps }}
-		// 						itensAnalise={itensAnalise}
-		// 						setItensAnalise={setItensAnalise}
-		// 						comentarios={comentarios}
-		// 						setComentarios={setComentarios}
-		// 						preCadastro={preCadastro}
-		// 						user={preCadastro ? null : user}
-		// 						historicoEmpresa={preCadastro ? false : empresa.Historico}
-		// 						disableEdit={
-		// 							preCadastro ? null : (
-		// 								getDisableEdit(
-		// 									user,
-		// 									empresa.AnaliseCadastro,
-		// 									getStatusItem(itensAnalise, 'Contato_Cliente')
-		// 								)
-		// 							)
-		// 						}
-		// 						statusEmpresa={
-		// 							empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 						}
-		// 					/>
-		// 				)}
+		<Form id='dadosBasico' onSubmit={handleSubmit}>
+			<Fragment>
+				{!empresa && (
+					<Box paddingTop={`${theme.spacing(1)}px`}>
+						<Card>
+							<CardContent>
+								<Box display='flex' flexDirection='row'>
+									<FormSelect
+										label={`${translate('labelSelectFornecedor')}`}
+										labelInitialItem={translate('selecioneOpcao')}
+										items={TIPO_EMPRESA}
+										value={tipoEmpresa.value}
+										onChange={event => {
+											console.log('TIPO DE EMPRESA');
+											console.log(tipoEmpresa.value);
+											resetForm();
+											setTipoEmpresa(event.target.value);
+										}}
+										error={checkError(submitCount, metadataTipoEmpresa)}
+										width='300px'
+									/>
+								</Box>
+								<Box display='flex' flexDirection='row'>
+									<RadioGroup
+										value={tipoCadastro.value}
+										onChange={event => {
+											setTipoCadastro(event.target.value);
+										}}
+										row
+									>
+										<FormControlLabel
+											value={CADASTRO_CENTRALIZADO.codigo}
+											control={<Radio color='primary' />}
+											label={`${translate('cadastroCentralizadoApenasLicitacoes')}`}
+											labelPlacement='end'
+										/>
+										<FormControlLabel
+											value={CADASTRO_DESCENTRALIZADO.codigo}
+											control={<Radio color='primary' />}
+											label={`${translate('cadastroDescentralizadoApenasUsuarios')}`}
+											labelPlacement='end'
+										/>
+									</RadioGroup>
+								</Box>
+								<Mensagem>{getMensagem()}</Mensagem>
+							</CardContent>
+						</Card>
+					</Box>
+				)}
+					<Fragment>
+						{tipoCadastro.value === CADASTRO_DESCENTRALIZADO.codigo && (
+							<ContatoCliente
+								formulario={{ submitCount, getFieldProps }}
+								itensAnalise={itensAnalise}
+								setItensAnalise={setItensAnalise}
+								comentarios={comentarios}
+								setComentarios={setComentarios}
+								preCadastro={preCadastro}
+								user={preCadastro ? null : user}
+								historicoEmpresa={preCadastro ? false : empresa.Historico}
+								disableEdit={
+									preCadastro ? null : (
+										getDisableEdit(
+											user,
+											empresa.AnaliseCadastro,
+											getStatusItem(itensAnalise, 'Contato_Cliente')
+										)
+									)
+								}
+								statusEmpresa={
+									empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+								}
+							/>
+						)}
 
-		// 				<DadosGerais
-		// 					formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? false : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? null : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Dados_Gerais')
-		// 							)
-		// 						)
-		// 					}
-		// 					statusEmpresa={
-		// 						empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 					}
-		// 				/>
+						<DadosGerais
+						    formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+							itensAnalise={itensAnalise}
+							empresaId={empresaId}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? false : empresa.Historico}
+							disableEdit={
+								preCadastro ? null : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Dados_Gerais')
+									)
+								)
+							}
+							statusEmpresa={
+								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+							}
+						/>
 
-		// 				{tipoEmpresa.value === MEI.id && (
-		// 					<DadosPessoaFisica
-		// 						estadoList={estadoList}
-		// 						formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 						itensAnalise={itensAnalise}
-		// 						setItensAnalise={setItensAnalise}
-		// 						comentarios={comentarios}
-		// 						setComentarios={setComentarios}
-		// 						preCadastro={preCadastro}
-		// 						user={preCadastro ? null : user}
-		// 						historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 						disableEdit={
-		// 							preCadastro ? (
-		// 								false
-		// 							) : (
-		// 								getDisableEdit(
-		// 									user,
-		// 									empresa.AnaliseCadastro,
-		// 									getStatusItem(itensAnalise, 'Dados_Pessoa_Fisica')
-		// 								)
-		// 							)
-		// 						}
-		// 						statusEmpresa={
-		// 							empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 						}
-		// 					/>
-		// 				)}
-		// 				<DadosEndereco
-		// 					estadoList={estadoList}
-		// 					formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? (
-		// 							false
-		// 						) : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Dados_Endereco')
-		// 							)
-		// 						)
-		// 					}
-		// 					statusEmpresa={
-		// 						empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 					}
-		// 				/>
-		// 				<DadosAcessoUsuario
-		// 					formulario={{
-		// 						submitCount,
-		// 						getFieldProps,
-		// 						setFieldValue,
-		// 						setFieldTouched
-		// 					}}
-		// 					mensagem={getMensagemDadosAcesso()}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? (
-		// 							false
-		// 						) : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Acesso_Sistema')
-		// 							)
-		// 						)
-		// 					}
-		// 					statusEmpresa={
-		// 						empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
-		// 					}
-		// 				/>
-		// 				<DadosContatosAdicionais
-		// 					formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
-		// 					itensAnalise={itensAnalise}
-		// 					setItensAnalise={setItensAnalise}
-		// 					comentarios={comentarios}
-		// 					setComentarios={setComentarios}
-		// 					preCadastro={preCadastro}
-		// 					user={preCadastro ? null : user}
-		// 					historicoEmpresa={preCadastro ? null : empresa.Historico}
-		// 					disableEdit={
-		// 						preCadastro ? (
-		// 							false
-		// 						) : (
-		// 							getDisableEdit(
-		// 								user,
-		// 								empresa.AnaliseCadastro,
-		// 								getStatusItem(itensAnalise, 'Dados_Contatos_Adicionais')
-		// 							)
-		// 						)
-		// 					}
-		// 				/>
-		// 									<Box paddingTop={`${theme.spacing(1)}px`}>
-		// 						<Card>
-		// 							<CardContent>
-		// 								<Fragment>
-		// 									<p>
-		// 										Declaro que todas as informações aqui prestadas são verdadeiras e a
-		// 										falsificação configura crime previsto no Código Penal Brasileiro (Art.
-		// 										297-299) passível de apuração na forma da lei, bem como pode ser enquadrada
-		// 										como litigância de má fé.
-		// 									</p>
-		// 									<Box
-		// 										style={{
-		// 											marginTop: 16,
-		// 											marginBottom: 16,
-		// 											borderRadius: 5,
-		// 											padding: 8,
-		// 											width: '275px',
-		// 											border: `${checkError(submitCount, metadataAceitoCondicoes)
-		// 												? 1
-		// 												: 0}px solid red`
-		// 										}}
-		// 									>
-		// 										<FormControlLabel
-		// 											control={
-		// 												<Checkbox
-		// 													key={key}
-		// 													checked={aceitoCondicoes.value}
-		// 													value={aceitoCondicoes.value}
-		// 													onChange={event => {
-		// 														setKey(key + 1);
-		// 														setFieldValue('aceitoCondicoes', event.target.checked);
-		// 														setFieldTouched('aceitoCondicoes', true);
-		// 													}}
-		// 													preCadastro={preCadastro}
-		// 												/>
-		// 											}
-		// 											label='Li e aceito os termos e condições.'
-		// 										/>
-		// 										{checkError(submitCount, metadataAceitoCondicoes) && (
-		// 											<FormHelperText style={{ color: 'red' }}>
-		// 												{metadataAceitoCondicoes.error}
-		// 											</FormHelperText>
-		// 										)}
-		// 									</Box>
-		// 								</Fragment>
-		// 							</CardContent>
-		// 						</Card>
-		// 					</Box>
+						{tipoEmpresa.value === MEI.id && (
+							<DadosPessoaFisica
+								estadoList={estadoList}
+								formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+								itensAnalise={itensAnalise}
+								setItensAnalise={setItensAnalise}
+								comentarios={comentarios}
+								setComentarios={setComentarios}
+								preCadastro={preCadastro}
+								user={preCadastro ? null : user}
+								historicoEmpresa={preCadastro ? null : empresa.Historico}
+								disableEdit={
+									preCadastro ? (
+										false
+									) : (
+										getDisableEdit(
+											user,
+											empresa.AnaliseCadastro,
+											getStatusItem(itensAnalise, 'Dados_Pessoa_Fisica')
+										)
+									)
+								}
+								statusEmpresa={
+									empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+								}
+							/>
+						)}
+						<DadosEndereco
+							estadoList={estadoList}
+							formulario={{ submitCount, getFieldProps, setFieldValue, setFieldTouched }}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? null : empresa.Historico}
+							disableEdit={
+								preCadastro ? (
+									false
+								) : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Dados_Endereco')
+									)
+								)
+							}
+							statusEmpresa={
+								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+							}
+						/>
+						<DadosAcessoUsuario
+							formulario={{
+								submitCount,
+								getFieldProps,
+								setFieldValue,
+								setFieldTouched
+							}}
+							mensagem={getMensagemDadosAcesso()}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							preCadastro={preCadastro}
+							user={preCadastro ? null : user}
+							historicoEmpresa={preCadastro ? null : empresa.Historico}
+							disableEdit={
+								preCadastro ? (
+									false
+								) : (
+									getDisableEdit(
+										user,
+										empresa.AnaliseCadastro,
+										getStatusItem(itensAnalise, 'Acesso_Sistema')
+									)
+								)
+							}
+							statusEmpresa={
+								empresa && empresa.AnaliseCadastro ? empresa.AnaliseCadastro.StatusAnalise : null
+							}
+						/>
+						<Box paddingTop={`${theme.spacing(1)}px`}>
+								<Card>
+									<CardContent>
+										<Fragment>
+											<p>
+												Declaro que todas as informações aqui prestadas são verdadeiras e a
+												falsificação configura crime previsto no Código Penal Brasileiro (Art.
+												297-299) passível de apuração na forma da lei, bem como pode ser enquadrada
+												como litigância de má fé.
+											</p>
+											<Box
+												style={{
+													marginTop: 16,
+													marginBottom: 16,
+													borderRadius: 5,
+													padding: 8,
+													width: '275px',
+													border: `${checkError(submitCount, metadataAceitoCondicoes)
+														? 1
+														: 0}px solid red`
+												}}
+											>
+												<FormControlLabel
+													control={
+														<Checkbox
+															key={key}
+															checked={aceitoCondicoes.value}
+															value={aceitoCondicoes.value}
+															onChange={event => {
+																setKey(key + 1);
+																setFieldValue('aceitoCondicoes', event.target.checked);
+																setFieldTouched('aceitoCondicoes', true);
+															}}
+															preCadastro={preCadastro}
+														/>
+													}
+													label='Li e aceito os termos e condições.'
+												/>
+												{checkError(submitCount, metadataAceitoCondicoes) && (
+													<FormHelperText style={{ color: 'red' }}>
+														{metadataAceitoCondicoes.error}
+													</FormHelperText>
+												)}
+											</Box>
+										</Fragment>
+									</CardContent>
+								</Card>
+							</Box>
 						
-		// 			</Fragment>
-		// 		)}
-		// 	</Fragment>
-		// </Form>
-		<div>teste</div>
+					</Fragment>
+				
+			</Fragment>
+		</Form>
 	);
 }

@@ -90,6 +90,7 @@ export const dataMask = value => {
 };
 
 export const soNumero = value => {
+	console.log(value);
 	const aux = value.replace(/\D/g, ''); // substitui qualquer caracter que nao seja numero por nada
 	return aux;
 };
@@ -112,12 +113,12 @@ export const moedaMask = value => {
 
 export const moeda = value => {
 	let tmp = value.toString();
-	tmp = tmp === '' ? '0' : `..{soNumero(tmp)}`;
+	tmp = tmp === '' ? '0' : `${soNumero(tmp)}`;
 	tmp = Number(tmp).toString();
 	if (tmp.length <= 2) {
-		tmp = `0000..{tmp}`.slice(-3);
+		//tmp = `0000${tmp}`.slice(-3);
 	}
-	tmp = tmp.replace(/([0-9]{2})@/g, '...1');
+	//tmp = tmp.replace(/([0-9]{2})@/g, '...1');
 
 	console.log(tmp);
 	tmp = Number(tmp);
@@ -130,5 +131,5 @@ export const percent = value => {
 		value = 0;
 	}
 	const result = (value * 100).toFixed(2);
-	return `..{result.toString()}%`;
+	return `${result.toString()}%`;
 };

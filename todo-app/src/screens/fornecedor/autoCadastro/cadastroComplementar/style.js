@@ -3,8 +3,8 @@ import { Done, Clear } from '@material-ui/icons';
 import theme from '@/theme';
 
 const DisplayDiv = styled.div`
-visibility: @/..{props => (props.visible ? 'visible' : 'hidden')}
-height:@/..{props => (props.visible ? '100%' : '0px')}
+visibility: ${props => (props.visible ? 'visible' : 'hidden')}
+height:${props => (props.visible ? '100%' : '0px')}
 `;
 
 const Valid = styled(Done)`

@@ -203,11 +203,11 @@ export default function ResultadoAnalise({
 	};
 
 	return (
-		<Box paddingTop={`@/..{theme.spacing(1)}px`}>
+		<Box paddingTop={`${theme.spacing(1)}px`}>
 			<Card style={{ marginTop: 8 }}>
 				<CardContent>
 					<Box display='flex' flexDirection='row'>
-						<Box width='50%' paddingRight={`@/..{theme.spacing(1)}px`}>
+						<Box width='50%' paddingRight={`${theme.spacing(1)}px`}>
 							<Card>
 								<CardHeader title={translate('riscoEstruturaFinanceira')} />
 								<CardContent>{inserirIcone(classificacao, true, 'flex-start')}</CardContent>
@@ -225,7 +225,7 @@ export default function ResultadoAnalise({
 								</CardContent>
 							</Card>
 						</Box>
-						<Box width='50%' paddingRight={`@/..{theme.spacing(1)}px`}>
+						<Box width='50%' paddingRight={`${theme.spacing(1)}px`}>
 							<Card>
 								<CardHeader title={translate('sugestaoCadastro')} />
 								<CardContent>
@@ -258,7 +258,7 @@ export default function ResultadoAnalise({
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row'>
-						<Box width='100%' paddingRight={`@/..{theme.spacing(1)}px`}>
+						<Box width='100%' paddingRight={`${theme.spacing(1)}px`}>
 							<Card>
 								<CardHeader title={translate('indicadoresForaEspecificadoRef')} />
 								<CardContent>
@@ -313,7 +313,7 @@ export default function ResultadoAnalise({
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row'>
-						<Box width='100%' paddingRight={`@/..{theme.spacing(1)}px`}>
+						<Box width='100%' paddingRight={`${theme.spacing(1)}px`}>
 							<Card>
 								<CardHeader title={translate('indicadoresForaEspecificadoRefMercUnivCemig')} />
 								<CardContent>

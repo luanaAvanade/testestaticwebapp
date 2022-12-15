@@ -15,6 +15,7 @@ import { Creators as LoaderCreators } from '@/store/ducks/loader';
 import DadosBasicos from '@/screens/fornecedor/autoCadastro/dadosBasicos';
 import DadosComplementar from '@/screens/fornecedor/autoCadastro/dadosComplementares';
 import DadosFinanceiros from '@/screens/fornecedor/autoCadastro/dadosFinanceiros';
+import QualificacaoaRiscoFinanceiro from '@/screens/fornecedor/qualificacaoRiscoFinanceiro';
 import DadosSocios from '@/screens/fornecedor/autoCadastro/dadosSocios';
 import EmpresaService from '@/services/empresa';
 import ObjectHelper from '@/utils/objectHelper';
@@ -34,20 +35,25 @@ import {
 import { DisplayDiv } from './style';
 import { Done, Clear } from '@material-ui/icons';
 
-//import { Confirm, Button, Card, Modal } from 'react-axxiom';
+import { Confirm, Button, Card, Modal } from 'react-axxiom';
 import { BotoesCadastro } from '@/screens/fornecedor/autoCadastro/componentesLayout/botoesCadastro';
+import { BotoesDadosComplementares } from '@/screens/fornecedor/autoCadastro/componentesLayout/botoesDadosComplementares';
 import { StatusEmpresa } from '@/screens/fornecedor/autoCadastro/componentesLayout/statusEmpresa';
+import { BotoesDadosFinanceiros } from '@/screens/fornecedor/autoCadastro/componentesLayout/botoesDadosFinanceiros';
+import { BotoesDadosSocios } from '@/screens/fornecedor/autoCadastro/componentesLayout/botoesDadosSocios';
 import { getDisableEdit } from '../aprovacao/util';
+import TermosAceiteEmpresaService from '@/services/termoAceiteEmpresa';
 import { Valid, Invalid } from './style';
 
 export default function CadastroComplemetar() {
 	const { history, match } = useReactRouter();
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const dispatch = useDispatch();
-	const idParam = match.isExact
-		? null
-		: parseInt(window.location.pathname.split(`${match.url}/`)[1], 10);
+	 const idParam = match.isExact
+	 	? null
+	 	: parseInt(window.location.pathname.split(`${match.url}/`)[1], 10);
 
+   // const idParam = 1;
 	//Mocar historico
 
 	const historicoEmpresa = [
@@ -180,6 +186,16 @@ export default function CadastroComplemetar() {
 	] = useState(0);
 
 	const [
+		tabAdd,
+		setTabAdd
+	] = useState(0);
+
+	const [
+		empresaId,
+		setEmpresaId
+	] = useState(0);
+
+	const [
 		empresa,
 		setEmpresa
 	] = useState(null);
@@ -260,6 +276,22 @@ export default function CadastroComplemetar() {
 	] = useState(null);
 
 	const [
+		acaoCadastroComplementar,
+		setAcaoCadastroComplementar
+	] = useState(null);
+
+	const [
+		acaoCadastroSocios,
+		setAcaoCadastroSocios
+	] = useState(null);
+
+	const [
+		acaoCadastroFinanceiro,
+		setAcaoCadastroFinanceiro
+	] = useState(null);
+
+
+	const [
 		openSalvarDados,
 		setOpenSalvarDados
 	] = useState(false);
@@ -280,12 +312,23 @@ export default function CadastroComplemetar() {
 	] = useState(false);
 
 	const [
+		modalInformeDadosBasicos,
+		setModalInformeDadosBasicos
+	] = useState(false);
+
+	const [
 		countLembrete,
 		setCountLembrete
 	] = useState(0);
 
 	// Efeito Inicial
 	useEffect(() => {
+
+		if(idParam && idParam != null){
+			setEmpresaId(idParam);
+			empresaFindById();
+			setAbasCadastro();
+		}
 		setEmpresa(null);
 		setItensAnalise([]);
 			setComentarios([]);
@@ -302,17 +345,8 @@ export default function CadastroComplemetar() {
 	}, []);
 
 	// Buscar Dados
-
 	const empresaFindById = async () => {
-		dispatch(LoaderCreators.setLoading());
-		//const u = getUser();
-		// if (u === null) {
-		// 	return history.push(paths.getPathByCodigo('semPermissao'));
-		// }
-
-//		goHome();
-
-		
+		dispatch(LoaderCreators.setLoading());		
 		var UsuarioEmp = {
 			Nome: 'Luana Rodrigues Santos'
 		}
@@ -321,15 +355,6 @@ export default function CadastroComplemetar() {
 			Nome: 'Luana Rodrigues Santos'
 		}
 
-		var AnaliseCadastro = {
-			StatusAnalise: 0,
-			AtribuidoId: 1,
-			TransmitidoId: '',
-			Atribuido: UsuarioEmp,
-			Transmitido: UsuarioEmp2,
-			
-
-		};
 
 		var calcRiscoLista = [
 		{
@@ -338,134 +363,60 @@ export default function CadastroComplemetar() {
 
 		];
 
+		try {
+			const response = await EmpresaService.findById(idParam);
+			if (response.data && response.data.Empresa_list.length > 0) {
+				response.data.Empresa_list[0].Historico = historicoEmpresa;
+				setEmpresa(response.data.Empresa_list[0]);
+				setKey(key + 1);
+				if(response.data.Empresa_list[0].AnaliseCadastro && response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise == ENUM_STATUS_ANALISE[2].value){
+					setDadosBasicosIsValid(true);
+					setDadosFinanceirosIsValid(true);
+					setSocioIsValid(true);
+					setQualificacaoRiscoFinanceiroIsValid(true);
+					setDadosComplementaresIsValid(true);
+				}
+				response.data.Empresa_list[0] = montarAnalise(response.data.Empresa_list[0]);
+				// const t = response.data.Empresa_list[0].AnaliseCadastro.ItensAnalise;
+				// t.forEach(x => (x.ArquivoId = x.ArquivoId === '' ? null : x.ArquivoId));
+				setItensAnalise(response.data.Empresa_list[0].AnaliseCadastro.ItensAnalise);
+				setStatusCadastro(
+					response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise === ''
+						? null
+						: response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise
+				);
+				setListTermosAceiteEmpresa(response.data.Empresa_list[0].TermoAceiteEmpresa);
+				setKey(key + 1);
+
+				// if (
+				// 	!usuario.perfilAnalista &&
+				// 	countLembrete === 0 &&
+				// 	response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise === CADASTRO_CRIADO
+				// ) {
+				// 	setModalLembreteAtualizacaoCadastro(true);
+				// 	setCountLembrete(1);
+				// }
 
 
-		var empresa = 
-			{
-				Id: 1,
-				Situacao: 2,
-				NomeEmpresa: 'Empresa telecom',
-				CalculoRiscoLista: calcRiscoLista,
-				CNPJ: '123456789',
-				TipoEmpresa: '1',
-				TipoCadastro: 'cadastro empresa',
-				DataCriacao: '',
-				AnaliseCadastro: AnaliseCadastro,
-	IsentoIE: true,
-	InscricaoMunicipal: 'sjdffjldfj',
-	OptanteSimplesNacional: true,
-	DataAbertura: '',
-	DadosPessoaFisicaId: null,
-	DadosPessoaFisica: null,
-	ContatosAdicionais: null,
-	Usuarios: null,
-	ContatoSolicitante: null,
-	ContatoSolicitanteId: null,
-	Enderecos: null,
-	GruposFornecimento: null,
-	Documentos: null,
-	DadosBalancosPatrimoniais: null,
-	DadosDREs: null,
-	DadosBancariosId: null,
-	DadosBancarios: null,
-	Socios: null,
-	GruposDeAssinatura: null,
-	CapitalSocialTotalSociedade: null,
-	DataRegistroSociedade: '',
-	AtividadeEconomicaPrincipalId: null,
-	AtividadeEconomicaPrincipal: null,
-	OcupacaoPrincipalId: null,
-	OcupacaoPrincipal: null,
-	TermoAceiteEmpresa: null,
-	CodigoSap: '',
-	Situacao: null,
-	Comentarios: null,
-	LinkCadastro: '', 
-	Historico: historicoEmpresa
-				
+				dispatch(LoaderCreators.disableLoading());
+			} else {
+				dispatch(LoaderCreators.disableLoading());
+				callbackError(translate('erroCarregamentoDadosEmpresa'));
 			}
-	
-			setEmpresa(empresa);
-
-
-
-			setKey(key + 1);
-
-
-
-
-			            //empresa = montarAnalise(empresa);
-						// const t = response.data.Empresa_list[0].AnaliseCadastro.ItensAnalise;
-						// t.forEach(x => (x.ArquivoId = x.ArquivoId === '' ? null : x.ArquivoId));
-						//setItensAnalise(response.data.Empresa_list[0].AnaliseCadastro.ItensAnalise);
-						setStatusCadastro(
-							empresa.AnaliseCadastro.StatusAnalise === ''
-								? null
-								: empresa.AnaliseCadastro.StatusAnalise
-						);
-						setListTermosAceiteEmpresa(empresa.TermoAceiteEmpresa);
-						
-	
-				
-						dispatch(LoaderCreators.disableLoading());
-
-
-
-
-		// const usuario = {
-		// 	empresaId: u.empresaId,
-		// 	perfilAnalista: u.permissions.find(x => x.name === 'FORNECEDOR_ANALISE_CADASTRO').u,
-		// 	id: u.id,
-		// 	nome: u.nome
-		// };
-
-		// if (usuario.perfilAnalista && idParam) {
-		// 	usuario.empresaId = idParam;
-		// }
-		// setUser(usuario);
-
-		// if (usuario.perfilAnalista && !usuario.empresaId) {
-		// 	goAnalise();
-		// } else if (!usuario.perfilAnalista && !usuario.empresaId) {
-		// 	goHome();
-		// } else {
-		// 	try {
-		// 		const response = await EmpresaService.findById(usuario.empresaId);
-		// 		if (response.data && response.data.Empresa_list.length > 0) {
-		// 			response.data.Empresa_list[0].Historico = historicoEmpresa;
-		// 			setEmpresa(response.data.Empresa_list[0]);
-
-		// 			response.data.Empresa_list[0] = montarAnalise(response.data.Empresa_list[0]);
-		// 			// const t = response.data.Empresa_list[0].AnaliseCadastro.ItensAnalise;
-		// 			// t.forEach(x => (x.ArquivoId = x.ArquivoId === '' ? null : x.ArquivoId));
-		// 			setItensAnalise(response.data.Empresa_list[0].AnaliseCadastro.ItensAnalise);
-		// 			setStatusCadastro(
-		// 				response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise === ''
-		// 					? null
-		// 					: response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise
-		// 			);
-		// 			setListTermosAceiteEmpresa(response.data.Empresa_list[0].TermoAceiteEmpresa);
-		// 			setKey(key + 1);
-
-		// 			if (
-		// 				!usuario.perfilAnalista &&
-		// 				countLembrete === 0 &&
-		// 				response.data.Empresa_list[0].AnaliseCadastro.StatusAnalise === CADASTRO_CRIADO
-		// 			) {
-		// 				setModalLembreteAtualizacaoCadastro(true);
-		// 				setCountLembrete(1);
-		// 			}
-
-		// 			dispatch(LoaderCreators.disableLoading());
-		// 		} else {
-		// 			dispatch(LoaderCreators.disableLoading());
-		// 			callbackError(translate('erroCarregamentoDadosEmpresa'));
-		// 		}
-		// 	} catch (error) {
-		// 		dispatch(LoaderCreators.disableLoading());
-		// 	}
-		// }
+			dispatch(LoaderCreators.disableLoading());
+		} catch (error) {
+			dispatch(LoaderCreators.disableLoading());
+		}
 	};
+
+	function setAbasCadastro(){
+		if(empresa && empresa.AnaliseCadastro && empresa.AnaliseCadastro.StatusAnalise == ENUM_STATUS_ANALISE[2].value){
+			setDadosBasicosIsValid(true);
+			setDadosFinanceirosIsValid(true);
+			setBalancoPatrimonialIsValid(true);
+			setDadosComplementaresIsValid(true);
+		}
+	}
 
 	const goHome = () => {
 		dispatch(LoaderCreators.disableLoading());
@@ -492,11 +443,11 @@ export default function CadastroComplemetar() {
 			ItensAnalise: getItensAnalise()
 		};
 
-		if (empresa.AnaliseCadastro.hasOwnProperty('Id') && empresa.AnaliseCadastro.Id !== null) {
+		if (empresa && empresa != null && empresa.AnaliseCadastro.hasOwnProperty('Id') && empresa.AnaliseCadastro.Id !== null) {
 			obj.Id = empresa.AnaliseCadastro.Id;
 		}
 		if (
-			empresa.AnaliseCadastro.hasOwnProperty('AtribuidoId') &&
+			empresa && empresa != null && empresa.AnaliseCadastro.hasOwnProperty('AtribuidoId') &&
 			empresa.AnaliseCadastro.AtribuidoId !== null
 		) {
 			obj.AtribuidoId =
@@ -529,27 +480,32 @@ export default function CadastroComplemetar() {
 	};
 
 	function enviarCadastro() {
-		if (getTermoNaoAceitos().length > 0) {
-			enqueueSnackbar(
-				'',
-				snackWarning(translate('possuemCamposPreenchidosIncorretamente'), closeSnackbar)
-			);
-			setErroTermoAceite(translate('termoAceiteObrigatorio'));
-		} else {
 			if (
 				!(
 					dadosBasicosIsValid &&
 					dadosComplementaresIsValid &&
-					((dadosFinanceirosIsValid && socioIsValid) ||
-						empresa.TipoCadastro === CADASTRO_DESCENTRALIZADO.codigo)
+					((dadosFinanceirosIsValid && socioIsValid))
 				)
 			) {
-				setAcao(COMANDO_CADASTRO_FORNECEDOR.validar);
+
+				if(tab == 1){
+					setAcaoCadastroComplementar(COMANDO_CADASTRO_FORNECEDOR.validar);
+				}
+				if(tab == 2){
+					setAcaoCadastroFinanceiro(COMANDO_CADASTRO_FORNECEDOR.validar);
+				}
+				if(tab == 3){
+					setAcaoCadastroSocios(COMANDO_CADASTRO_FORNECEDOR.validar);
+				}
+				if(tab == 0){
+					setAcao(COMANDO_CADASTRO_FORNECEDOR.validar);
+				}		
+				
 				callbackWarning(translate('possuemCamposPreenchidosIncorretamente'));
 			} else {
 				setAcao(COMANDO_CADASTRO_FORNECEDOR.enviarCadastro);
 			}
-		}
+		
 	}
 
 	function finalizarAnalise() {
@@ -582,8 +538,34 @@ export default function CadastroComplemetar() {
 		return true;
 	}
 
-	function salvarAba(aba) {
-		setAcao(COMANDO_CADASTRO_FORNECEDOR.salvar);
+	function salvarAba(aba) {		
+		if (empresa && empresa != null && empresa.AnaliseCadastro && empresa.AnaliseCadastro != null) {
+			if(empresa.AnaliseCadastro.StatusAnalise != ENUM_STATUS_ANALISE[2].value){
+				setAcaoCadastro(aba);
+			}
+		}
+		else{
+			setAcaoCadastro(aba);
+		}
+		
+	
+	}
+
+
+	function setAcaoCadastro(aba){
+
+		if(aba == 1){
+			setAcaoCadastroComplementar(COMANDO_CADASTRO_FORNECEDOR.criarCadastro);
+		}
+		if(aba == 2){
+			setAcaoCadastroFinanceiro(COMANDO_CADASTRO_FORNECEDOR.criarCadastro);
+		}
+		if(aba == 3){
+			setAcaoCadastroSocios(COMANDO_CADASTRO_FORNECEDOR.criarCadastro);
+		}
+		if(aba == 0){
+			setAcao(COMANDO_CADASTRO_FORNECEDOR.criarCadastro);
+		}		
 	}
 
 	//Aprovacao
@@ -608,17 +590,31 @@ export default function CadastroComplemetar() {
 	};
 	const alterTab = () => {
 		salvarAba(tab);
-		setTimeout(() => closeModal(), 50);
+		setTimeout(() => closeModalSave(), 50);
+		setTab(tabAdd);
+	};
+
+	const closeModalSave = () => {
+		setOpenSalvarDados(false);
 	};
 
 	const closeModal = () => {
 		setChanged(false);
 		setOpenSalvarDados(false);
 		setTab(tabChanged);
-		setAcao(COMANDO_CADASTRO_FORNECEDOR.descartarAlteracoes);
 	};
 
 	const getIconIsValid = isValid => {
+		return isValid ? <Valid /> : <Invalid />;
+	};
+
+	const getIconIsValidSocio = isValid => {
+
+		if (empresa && empresa != null && empresa.AnaliseCadastro && empresa.AnaliseCadastro != null) {
+			if(empresa.AnaliseCadastro.StatusAnalise == ENUM_STATUS_ANALISE[2].value){
+				return <Valid />;
+			}
+		}
 		return isValid ? <Valid /> : <Invalid />;
 	};
 
@@ -642,113 +638,259 @@ export default function CadastroComplemetar() {
 	}
 
 	const setTabWithChangesCheck = newTab => {
+		setTabAdd(newTab);
 		if (changed) {
 			setTabChanged(newTab);
 			setOpenSalvarDados(true);
-		} else {
+		} else if(tab == 0 || tab == '0'){
+			if (empresa && empresa != null && empresa.AnaliseCadastro && empresa.AnaliseCadastro != null) {
+				if(empresa.AnaliseCadastro.StatusAnalise != ENUM_STATUS_ANALISE[2].value){
+					setModalInformeDadosBasicos(true);
+				}
+				else{
+					setTab(newTab);
+				}
+			}else{
+				setModalInformeDadosBasicos(true);
+			}
+			
+		} 
+		else
+		{
 			setTab(newTab);
 		}
 	};
 
 	return (
-		// <LayoutContent noCard>
-		// 	<Title text={paths.getTitle(paths.getCurrentPath(history))} />
+		<LayoutContent noCard>
+			<Title text={paths.getTitle(paths.getCurrentPath(history))} />
 
-		// 	{comentarios.count > 0 && <p>{comentarios[0].Coment}</p>}
-		// 	<Modal
-		// 		open={modalLembreteAtualizacaoCadastro}
-		// 		handleClose={() => setModalLembreteAtualizacaoCadastro(false)}
-		// 		onClickButton={() => setModalLembreteAtualizacaoCadastro(false)}
-		// 		title={
-		// 			<h3 align='center'>
-		// 				{translate('Olá ')} {user !== null ? user.nome : ''}
-		// 			</h3>
-		// 		}
-		// 		textButton={translate('ok')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	>
-		// 		<Typography variant='h5' align='center'>
-		// 			{translate('msgAlertaAtualizacaoCadastro')}
-		// 		</Typography>
-		// 	</Modal>
+			{comentarios.count > 0 && <p>{comentarios[0].Coment}</p>}
+			<Modal
+				open={modalLembreteAtualizacaoCadastro}
+				handleClose={() => setModalLembreteAtualizacaoCadastro(false)}
+				onClickButton={() => setModalLembreteAtualizacaoCadastro(false)}
+				title={
+					<h3 align='center'>
+						{translate('Olá ')} {user !== null ? user.nome : ''}
+					</h3>
+				}
+				textButton={translate('ok')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			>
+				<Typography variant='h5' align='center'>
+					{translate('msgAlertaAtualizacaoCadastro')}
+				</Typography>
+			</Modal>
 
-		// 	<Confirm
-		// 		open={openSalvarDados}
-		// 		handleClose={() => closeModal()}
-		// 		handleSuccess={() => alterTab()}
-		// 		title={translate('salvarDados')}
-		// 		text={translate('desejaSalvarDados')}
-		// 		textButtonSuccess={translate('salvar')}
-		// 		textButtonCancel={translate('descartarAlteracoes')}
-		// 		backgroundColorButtonCancel={theme.palette.secondary.main}
-		// 	/>
-			
-		// 		<Box justifyContent='space-between' display='flex'>
-		// 			<Box>
-		// 				<Tabs
-		// 					value={tab}
-		// 					onChange={(event, newValue) => setTabWithChangesCheck(newValue)}
-		// 					indicatorColor='primary'
-		// 					textcolor='primary'
-		// 				>
-							
-		// 						<Tab
-		// 							value={TAB_DADOS_BASICOS}
-		// 							label={translate('dadosBasicos')}
-		// 							icon={getIconIsValid(dadosBasicosIsValid)}
-		// 						/>
-							
+			<Modal
+				open={modalInformeDadosBasicos}
+				handleClose={() => setModalInformeDadosBasicos(false)}
+				onClickButton={() => setModalInformeDadosBasicos(false)}
+				title={
+					<h5 align='center'>
+						{'Dados obrigatórios'}
+					</h5>
+				}
+				textButton={translate('ok')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			>
+				<Typography variant='h5' align='center'>
+					{'É obrigatório o preenchimento dos dados básicos para dar prosseguimento ao cadatro.'}
+				</Typography>
+			</Modal>
 
-		// 						<Tab
-		// 							value={TAB_DADOS_COMPLEMENTAR}
-		// 							label={translate('dadosComplementares')}
-		// 							icon={getIconIsValid(dadosComplementaresIsValid)}
-		// 						/>
+			<Confirm
+				open={openSalvarDados}
+				handleClose={() => closeModal()}
+				handleSuccess={() => alterTab()}
+				title={translate('salvarDados')}
+				text={translate('desejaSalvarDados')}
+				textButtonSuccess={translate('salvar')}
+				textButtonCancel={translate('descartarAlteracoes')}
+				backgroundColorButtonCancel={theme.palette.secondary.main}
+			/>
+				<Box justifyContent='space-between' display='flex'>
+					<Box>
+						<Tabs
+							value={tab}
+							onChange={(event, newValue) => setTabWithChangesCheck(newValue)}
+							indicatorColor='primary'
+							textcolor='primary'
+						>
+								<Tab
+									value={TAB_DADOS_BASICOS}
+									label={translate('dadosBasicos')}
+									icon={getIconIsValid(dadosBasicosIsValid)}
+								/>
+								<Tab
+									value={TAB_DADOS_COMPLEMENTAR}
+									label={translate('dadosComplementares')}
+									icon={getIconIsValid(dadosComplementaresIsValid)}
+								/>
+								<Tab
+									value={TAB_DADOS_FINANCEIROS}
+									label={translate('dadosFinanceiros')}
+									icon={getIconIsValid(dadosFinanceirosIsValid)}
+								/>
+								<Tab
+									value={TAB_DADOS_SOCIOS}
+									label={translate('dadosSocios')}
+									icon={getIconIsValidSocio(socioIsValid)}
+								/>
+								{idParam &&
+							idParam != null && 
+								<Tab
+									value={TAB_QUALIFICACAO}
+									label={translate('qualificacaoRiscoFinanceiro')}
+									icon={getIconIsValid(qualificacaoRiscoFinanceiroIsValid)}
+								/>
 							
-		// 						<Tab
-		// 							value={TAB_DADOS_FINANCEIROS}
-		// 							label={translate('dadosFinanceiros')}
-		// 							icon={getIconIsValid(dadosFinanceirosIsValid)}
-		// 						/>
-							
-		// 						<Tab
-		// 							value={TAB_DADOS_SOCIOS}
-		// 							label={translate('dadosSocios')}
-		// 							icon={getIconIsValid(socioIsValid)}
-		// 						/>
-		// 					</Tabs>
-		// 			</Box>
-		// 		</Box>
-		// 		<Fragment>
-		// 			<DisplayDiv visible={tab === TAB_DADOS_BASICOS}>
-		// 				<DadosBasicos
-		// 					preCadastro
-		// 			acao={acao}
-		// 			setAcao={setAcao}
-		// 			setDadosBasicosIsValid={setDadosBasicosIsValid}
-		// 				/>
-		// 				<BotoesCadastro
-		// 					setAcao={setAcao}
-		// 					enviarCadastro={enviarCadastro}
-		// 					empresaFindById={empresaFindById}
-		// 					//disableEdit={getDisableEdit(user, empresa.AnaliseCadastro, null)}
-		// 					finalizarAnalise={finalizarAnalise}
-		// 					statusEmpresa={"Pendente Envio"}
-		// 				/>
-		// 			</DisplayDiv>
+							}
+						</Tabs>
+					</Box>
+					{/* <StatusEmpresa statusEmpresa={empresa.AnaliseCadastro.StatusAnalise} /> */}
+				</Box>
+				<Fragment>
+					<DisplayDiv visible={tab === TAB_DADOS_BASICOS}>
+					<DadosBasicos
+							preCadastro
+					acao={acao}
+					empresa={empresa}
+					empresaId={empresaId}
+					setEmpresaId={setEmpresaId}
+					setEmpresa={setEmpresa}
+					setAcao={setAcao}
+					setDadosBasicosIsValid={setDadosBasicosIsValid}
+					setChanged={setChanged}
+					getAnaliseCadastro={getAnaliseCadastro}
+						/>
+						<BotoesCadastro
+							setAcao={setAcao}
+							enviarCadastro={enviarCadastro}
+							empresaFindById={empresaFindById}
+							finalizarAnalise={finalizarAnalise}
+							statusEmpresa={"Pendente Envio"}
+						/>
+					</DisplayDiv>
+					<DisplayDiv visible={tab === TAB_DADOS_COMPLEMENTAR}>
+						<DadosComplementar
+							key={key + 1}
+							empresaId={empresaId}
+					        setEmpresaId={setEmpresaId}
+							empresa={empresa}
+							preCadastro={!empresa}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							getComentarios={getComentarios}
+							setDadosComplementaresIsValid={setDadosComplementaresIsValid}
+							getAnaliseCadastro={getAnaliseCadastro}
+							user={user}
+							acao={acao}
+							tab={tab}
+							setAcao={setAcao}
+							setAcaoCadastroComplementar={setAcaoCadastroComplementar}
+							acaoCadastroComplementar={acaoCadastroComplementar}
+							listTermosAceiteEmpresa={listTermosAceiteEmpresa}
+							setListTermosAceiteEmpresa={setListTermosAceiteEmpresa}
+							erroTermoAceite={erroTermoAceite}
+							setErroTermoAceite={setErroTermoAceite}
+							getTermoNaoAceitos={getTermoNaoAceitos}
+							setChanged={setChanged}
+						/>
+						<BotoesDadosComplementares
+							setAcaoCadastroComplementar={setAcaoCadastroComplementar}
+							enviarCadastro={enviarCadastro}
+							empresaFindById={empresaFindById}
+							finalizarAnalise={finalizarAnalise}
+							statusEmpresa={"Pendente Envio"}
+						/>
+					</DisplayDiv>
+					<DisplayDiv visible={tab === TAB_DADOS_FINANCEIROS}>
+						<DadosFinanceiros
+							key={key + 2}
+							empresa={empresa}
+							preCadastro={!empresa}
+							empresaId={empresaId}
+							setEmpresaId={setEmpresaId}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							getComentarios={getComentarios}
+							setDadosFinanceirosIsValid={setDadosFinanceirosIsValid}
+							getAnaliseCadastro={getAnaliseCadastro}
+							setBalancoPatrimonialIsValid={setBalancoPatrimonialIsValid}
+							setBalancoDREIsValid={setBalancoDREIsValid}
+							user={user}
+							acao={acao}
+							tab={tab}
+							setAcao={setAcao}
+							setAcaoCadastroFinanceiro={setAcaoCadastroFinanceiro}
+							acaoCadastroFinanceiro={acaoCadastroFinanceiro}
+							listTermosAceiteEmpresa={listTermosAceiteEmpresa}
+							setListTermosAceiteEmpresa={setListTermosAceiteEmpresa}
+							erroTermoAceite={erroTermoAceite}
+							setErroTermoAceite={setErroTermoAceite}
+							getTermoNaoAceitos={getTermoNaoAceitos}
+							setChanged={setChanged}
+						/>
+						<BotoesDadosFinanceiros
+							setAcaoCadastroFinanceiro={setAcaoCadastroFinanceiro}
+							enviarCadastro={enviarCadastro}
+							empresaFindById={empresaFindById}
+							//disableEdit={getDisableEdit(user, empresa.AnaliseCadastro, null)}
+							finalizarAnalise={finalizarAnalise}
+						/>
+					</DisplayDiv>
+					<DisplayDiv visible={tab === TAB_DADOS_SOCIOS}>
+						<DadosSocios
+							key={key + 4}
+							setKey={setKey}
+							empresaId={empresaId}
+							setEmpresaId={setEmpresaId}
+							empresa={empresa}
+							preCadastro={!empresa}
+							empresaFindById={empresaFindById}
+							itensAnalise={itensAnalise}
+							setItensAnalise={setItensAnalise}
+							comentarios={comentarios}
+							setComentarios={setComentarios}
+							getComentarios={getComentarios}
+							setSocioIsValid={setSocioIsValid}
+							getAnaliseCadastro={getAnaliseCadastro}
+							user={user}
+							acao={acao}
+							tab={tab}
+							setAcao={setAcao}
+							setAcaoCadastroSocios={setAcaoCadastroSocios}
+							acaoCadastroSocios={acaoCadastroSocios}
+							listTermosAceiteEmpresa={listTermosAceiteEmpresa}
+							setListTermosAceiteEmpresa={setListTermosAceiteEmpresa}
+							erroTermoAceite={erroTermoAceite}
+							setErroTermoAceite={setErroTermoAceite}
+							getTermoNaoAceitos={getTermoNaoAceitos}
+							setChanged={setChanged}
+						/>
+						<BotoesDadosSocios
+							setAcaoCadastroSocios={setAcaoCadastroSocios}
+							enviarCadastro={enviarCadastro}
+							empresaFindById={empresaFindById}
+							//disableEdit={getDisableEdit(user, empresa.AnaliseCadastro, null)}
+							finalizarAnalise={finalizarAnalise}
+						/>
+					</DisplayDiv>
 
-		// 			<DisplayDiv visible={tab === TAB_DADOS_COMPLEMENTAR}>
-		// 				<DadosComplementar/>
-		// 			</DisplayDiv>
-		// 			<DisplayDiv visible={tab === TAB_DADOS_FINANCEIROS}>
-		// 				<DadosFinanceiros/>
-		// 			</DisplayDiv>
-		// 			<DisplayDiv visible={tab === TAB_DADOS_SOCIOS}>
-		// 				<DadosSocios/>
-		// 			</DisplayDiv>
-		// 		 </Fragment> 
-			 
-		// </LayoutContent>
-		<div>teste</div>
+					{idParam &&
+							idParam != null && 
+					<DisplayDiv visible={tab === TAB_QUALIFICACAO}>
+							<QualificacaoaRiscoFinanceiro key={key + 3} empresa={empresa} tab={tab} />
+					</DisplayDiv>
+							}
+				
+				 </Fragment> 
+		</LayoutContent>
 	);
 }
