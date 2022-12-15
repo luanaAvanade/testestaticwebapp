@@ -306,7 +306,7 @@ export default function DadosBalancoPatrimonial({
 
 				<Card style={{ marginTop: 8 }}>
 					<CardHeader
-						title={translateWithHtml('Dados do Balanço Patrimonial 2022')}
+						title={translateWithHtml('Dados do Balanço Patrimonial 2021')}
 						action={
 							<Fragment>
 								<Box>
@@ -542,7 +542,7 @@ export default function DadosBalancoPatrimonial({
 
 <Card style={{ marginTop: 8 }}>
 					<CardHeader
-						title={translateWithHtml('Dados do Balanço Patrimonial 2021')}
+						title={translateWithHtml('Dados do Balanço Patrimonial 2020')}
 						action={
 							<Fragment>
 								<Box>
@@ -769,11 +769,9 @@ export default function DadosBalancoPatrimonial({
 
 
 
-
-
 <Card style={{ marginTop: 8 }}>
 					<CardHeader
-						title={translateWithHtml('Dados do Balanço Patrimonial 2020')}
+						title={translateWithHtml('Dados do Balanço Patrimonial 2019')}
 						action={
 							<Fragment>
 								<Box>
