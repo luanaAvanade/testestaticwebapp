@@ -348,7 +348,7 @@ const [
 
 				<Card style={{ marginTop: 8 }}>
 					<CardHeader
-						title={translateWithHtml('dadosDemonstracaoResultadoExercicio') + '2022'}
+						title={'Dados Demonstração do Resultado do Exercício 2022'}
 						action={
 							<Fragment>
 								<Box>
@@ -494,7 +494,7 @@ const [
 
 				<Card style={{ marginTop: 8 }}>
 					<CardHeader
-						title={translateWithHtml('dadosDemonstracaoResultadoExercicio') + '2021'}
+						title={'Dados Demonstração do Resultado do Exercício 2021'}
 						action={
 							<Fragment>
 								<Box>
@@ -641,7 +641,7 @@ const [
 
 <Card style={{ marginTop: 8 }}>
 					<CardHeader
-						title={translateWithHtml('dadosDemonstracaoResultadoExercicio') + '2020'}
+						title={'Dados Demonstração do Resultado do Exercício 2020'}
 						action={
 							<Fragment>
 								<Box>
